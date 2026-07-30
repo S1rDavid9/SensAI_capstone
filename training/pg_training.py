@@ -133,6 +133,12 @@ class REINFORCE:
         self.policy_net = _REINFORCEPolicyNet(self._obs_dim, self._n_actions, self._net_arch)
         self.optimizer = torch.optim.Adam(self.policy_net.parameters(), lr=learning_rate)
 
+        # Per-batch mean policy entropy, for training-stability analysis (see
+        # tests/stability_analysis.py) -- purely additive bookkeeping, never
+        # read by .learn()/.predict() themselves, so this changes no training
+        # behavior for existing callers.
+        self.entropy_history: list[float] = []
+
     def predict(self, obs, deterministic: bool = False):
         """Matches SB3's `model.predict(obs, deterministic=...) -> (action, state)`
         signature, so this is a drop-in for the same policy-inspection/demo
@@ -186,6 +192,7 @@ class REINFORCE:
                 returns_t = (returns_t - returns_t.mean()) / (returns_t.std(unbiased=False) + 1e-8)
             log_probs_t = torch.cat(batch_log_probs)
             entropy_t = torch.cat(batch_entropies).mean()
+            self.entropy_history.append(entropy_t.item())
 
             # Policy gradient ascent on E[log pi(a|s) * G] == minimize its negation;
             # a small entropy bonus (when entropy_coef > 0) discourages premature
@@ -218,6 +225,7 @@ class REINFORCE:
         obj.batch_episodes = None
         obj.entropy_coef = None
         obj.use_baseline = None
+        obj.entropy_history = []
         obj._obs_dim = checkpoint["obs_dim"]
         obj._n_actions = checkpoint["n_actions"]
         obj._net_arch = checkpoint["net_arch"]

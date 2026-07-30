@@ -21,7 +21,7 @@ made where the assignment brief left something open).
 ## Quickstart
 
 ```bash
-uv sync                          # install dependencies
+uv sync --extra dev              # install dependencies, including pytest (plain `uv sync` skips it)
 uv run pytest                    # run the test suite (headless, no rendering)
 uv run python main.py demo       # watch the best trained agent in a live window
 ```
@@ -63,7 +63,27 @@ tests/
   manual_*.py        Manual/visual diagnostic scripts (not part of the pytest suite)
   manual_policy_inspection.py   Action-frequency / state-conditioned cross-tab for a trained model
 models/, logs/       Per-run trained models, monitor logs, summary CSVs, best_run.json, plots
+api/                 Bonus: FastAPI wrapper exposing the environment as a JSON API (see below)
 ```
+
+## Bonus: JSON API for frontend integration
+
+`api/` is a minimal FastAPI wrapper demonstrating that AdaptLearn-v1 can be
+driven entirely over JSON -- `POST /reset`, `POST /step` (the trained model
+picks its own action if none is supplied), and `GET /episode-summary` -- so
+a web or mobile frontend could integrate with it without ever running
+Python, Gymnasium, or PyTorch itself.
+
+```bash
+uv run uvicorn api.app:app --reload   # then open http://127.0.0.1:8000/docs
+```
+
+`POST /step`, called with an empty body, showing the trained model choosing its own action live through Swagger UI:
+
+![Swagger UI: POST /step](api/screenshots/swagger_step.png)
+
+Full endpoint docs, more request/response examples, and the `/reset`
+and `/episode-summary` screenshots: see [`api/README.md`](api/README.md).
 
 ## Current best results (20,000 timesteps/run, 12-run sweep each)
 

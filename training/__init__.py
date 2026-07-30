@@ -74,6 +74,7 @@ def run_single_training(
     models_dir: Path,
     logs_dir: Path,
     sb3_kwargs: dict[str, Any] | None = None,
+    tensorboard_log: str | None = None,
 ) -> RunResult:
     """Train one model for one (algorithm, hyperparameter, seed) run, saving
     the model and a full log of the run to disk, and returning a RunResult.
@@ -84,6 +85,13 @@ def run_single_training(
     constructor (e.g. `net_arch` gets nested inside `policy_kwargs`).
     Keeping these separate means the logged hyperparameters stay flat and
     readable even when the SB3 API requires nesting.
+
+    `tensorboard_log` is optional and defaults to None (no behavior change
+    for existing callers that don't pass it -- the SB3 constructor call
+    below is then byte-for-byte identical to before this parameter existed).
+    When given a path, SB3's own scalar logging (e.g. train/loss,
+    train/entropy_loss) is enabled for this run -- see
+    tests/stability_analysis.py, the only current caller that passes this.
     """
     run_model_dir = models_dir / run_id
     run_log_dir = logs_dir / run_id
@@ -93,10 +101,16 @@ def run_single_training(
     monitor_path = run_log_dir / "monitor.csv"
     env = Monitor(AdaptLearnEnv(), filename=str(monitor_path))
 
-    model = algo_class(policy, env, seed=seed, verbose=0, **(sb3_kwargs or hyperparams))
+    extra_kwargs = {} if tensorboard_log is None else {"tensorboard_log": tensorboard_log}
+    model = algo_class(policy, env, seed=seed, verbose=0, **extra_kwargs, **(sb3_kwargs or hyperparams))
 
+    # tb_log_name is only meaningful (and only SB3-algo-compatible -- REINFORCE's
+    # .learn() takes no such argument) when tensorboard_log was actually
+    # requested; omitted entirely otherwise, so this is a no-op for every
+    # existing caller (none of which pass tensorboard_log).
+    learn_kwargs = {} if tensorboard_log is None else {"tb_log_name": run_id}
     start = time.time()
-    model.learn(total_timesteps=total_timesteps)
+    model.learn(total_timesteps=total_timesteps, **learn_kwargs)
     training_time_seconds = time.time() - start
 
     model_path = run_model_dir / "model.zip"
