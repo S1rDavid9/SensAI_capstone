@@ -14,6 +14,10 @@ Four algorithms are trained and compared on it: **DQN**, **PPO**, **A2C**
 A PyOpenGL renderer visualizes a trained agent's episodes as a small
 classroom scene (seated learner, blackboard, desk, difficulty gauge, HUD).
 
+![AdaptLearn-v1 classroom renderer](assets/classroom_renderer.png)
+
+**Demo video:** https://youtu.be/ECvT6zNF19Y
+
 See `environment/custom_env.py`'s module docstring for the full design
 rationale (the theory behind the transition model, and every judgment call
 made where the assignment brief left something open).
