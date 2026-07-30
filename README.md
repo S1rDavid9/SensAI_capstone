@@ -56,13 +56,23 @@ environment/
 training/
   dqn_training.py    DQN hyperparameter sweep (12 configs)
   pg_training.py     PPO / A2C / REINFORCE hyperparameter sweeps (12 configs each)
-  compare_algorithms.py   Cross-algorithm comparison plots + summary table
+  compare_algorithms.py         Cross-algorithm comparison plots + summary table
+  convergence_analysis.py       Episodes-to-converge plot (peak / 90%-threshold marker), all four algorithms
+  cumulative_reward_subplots.py Reward-over-training subplots, all four best runs
+  generalization_plot.py        Bar-chart visualization of the generalization test results
+  pg_entropy_combined.py        Combined PPO / A2C / REINFORCE entropy plot
   __init__.py        Shared training/plotting utilities used by all of the above
 tests/
   test_*.py          Automated tests (reward values, terminal conditions, spaces, transitions, reproducibility)
   manual_*.py        Manual/visual diagnostic scripts (not part of the pytest suite)
   manual_policy_inspection.py   Action-frequency / state-conditioned cross-tab for a trained model
+  generalization_test.py        Held-out-seed and edge-case stress test, all four algorithms
+  stability_analysis.py         Reruns the four best runs with objective-loss / entropy logging enabled
 models/, logs/       Per-run trained models, monitor logs, summary CSVs, best_run.json, plots
+  logs/comparison/   Cross-algorithm comparison, convergence, and cumulative-reward plots
+  logs/generalization/   Held-out-seed and edge-case results, plus the comparison plot
+  logs/stability/    DQN loss / PG entropy curves (CSVs and plots) for the four best runs
+  models/stability/  Models retrained with stability logging enabled, kept separate from the main 48-run sweep
 api/                 Bonus: FastAPI wrapper exposing the environment as a JSON API (see below)
 ```
 
@@ -100,19 +110,23 @@ findings (which actions each trained agent actually uses per engagement
 state, and where each falls short of "sensible tutor" behavior) are not
 duplicated here — see the report.
 
-## Notes to fold into the report (not yet written up)
+## Known limitations
 
-- **DQN CONFUSED-response variance.** After reverting the targeted CONFUSED
-  reward bonus (see `RewardConfig`'s docstring in `environment/custom_env.py`
-  for why it was tried and reverted), the new best DQN run (`dqn_02`) was
-  re-inspected and its CONFUSED handling did not reproduce cleanly: it now
-  resolves CONFUSED mostly via `advance_topic` (8/10 occurrences across the
-  10-episode inspection) rather than `decrease_difficulty` (1/10), which is
-  the opposite of what was previously documented for this exact model/state.
-  Aggregate reward matched the historical value almost exactly (9.6585 vs.
-  the previously reported ~9.66), so this looks less like a bad revert and
-  more like CONFUSED being a low-frequency, high-variance state for this
-  policy (~10 occurrences total in the eval batch) rather than a robustly
-  "camped" behavior in either direction. Worth stating as an explicit
-  limitation on the CONFUSED-handling comparison in the report, rather than
-  treating either reading as ground truth.
+- **CONFUSED handling is a shared blind spot across algorithms.** DQN, PPO,
+  and A2C all converge on responses to the learner's CONFUSED state that
+  don't mechanically resolve it in the environment's own transition model
+  (only `offer_hint`, `repeat_simplified`, or `change_task_type` do). This
+  independent convergence across three structurally different algorithms
+  points to CONFUSED's low occurrence frequency and comparatively weak
+  reward signal, rather than a weakness in any one algorithm — see the
+  report's Behavioural Policy Analysis and Reward Structure Iteration
+  sections for the full investigation, including a targeted reward fix
+  that was tried and reverted after it destabilized three of the four
+  algorithms' broader policies.
+- **REINFORCE's `seed` argument does not fully control reproducibility.**
+  `training/pg_training.py`'s training loop calls `env.reset()` without a
+  seed, so the environment's own stochasticity is not fixed across runs
+  even when REINFORCE's `seed` (which only seeds network initialization)
+  is held constant. Documented in the report as a scope limitation for
+  REINFORCE's results specifically; DQN/PPO/A2C are unaffected since
+  Stable-Baselines3 seeds the environment internally.
