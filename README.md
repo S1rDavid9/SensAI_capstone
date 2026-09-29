@@ -1,2 +1,2 @@
-# codesensai_capstone
+# SensAI_capstone
 Capstone project: An AI learning system
