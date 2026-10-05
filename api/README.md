@@ -1,12 +1,10 @@
-# AdaptLearn-v1 API (bonus demo)
+# SensAI API (Stage 2 MVP)
 
-A minimal FastAPI wrapper around AdaptLearn-v1, demonstrating that the
-environment's state, actions, and rewards are trivially JSON-serializable
-and usable as an API for a frontend. **This is a demonstration, not
-production infrastructure**: no authentication, no database, no
-deployment config, and a single global in-memory session (no multi-user
-handling). It lives entirely under `api/` and does not touch
-`environment/`, `training/`, or any of the project's required structure.
+A minimal FastAPI wrapper around the Stage 2 policy and its AdaptLearn-v1
+environment. State, actions and rewards are plain JSON, so a web or mobile
+frontend can drive an episode without running Python itself. **This is a
+demonstration, not production infrastructure**: no authentication, no
+database, and a single global in-memory session (no multi-user handling).
 
 ## Running it
 
@@ -14,7 +12,7 @@ handling). It lives entirely under `api/` and does not touch
 uv run uvicorn api.app:app --reload
 ```
 
-Then visit `http://127.0.0.1:8000/docs` for FastAPI's interactive
+Run it from the repository root (model paths are relative). Then visit `http://127.0.0.1:8000/docs` for FastAPI's interactive
 Swagger UI, or use the endpoints directly (examples below).
 
 ## Endpoints
@@ -86,6 +84,9 @@ curl -X POST http://127.0.0.1:8000/step \
 Passing an explicit action instead: `-d '{"action": 3}'` (see
 `ACTION_NAMES` in `environment/custom_env.py` for the index-to-name
 mapping).
+
+Once an episode has ended (dropout, success, or the 50-step limit),
+`/step` returns a 400 until `/reset` is called again.
 
 ### `GET /episode-summary`
 

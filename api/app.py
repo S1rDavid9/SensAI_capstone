@@ -1,4 +1,4 @@
-"""AdaptLearn-v1 as a JSON API -- bonus demonstration only.
+"""SensAI Stage 2 policy (AdaptLearn-v1 environment) as a JSON API -- MVP demonstration.
 
 Shows that the environment's state/actions/rewards are trivially
 JSON-serializable, so a frontend (a web dashboard, or the existing
@@ -20,12 +20,16 @@ from pathlib import Path
 from typing import Any
 
 from fastapi import FastAPI, HTTPException
+from fastapi.responses import RedirectResponse
 from pydantic import BaseModel
 from stable_baselines3 import A2C, DQN, PPO
 
 from environment.custom_env import ACTION_NAMES, AdaptLearnEnv
 
-app = FastAPI(title="AdaptLearn-v1 API", description="Bonus demo: AdaptLearn-v1 exposed as a JSON API.")
+app = FastAPI(
+    title="SensAI API",
+    description="SensAI Stage 2 MVP: the simulation-trained DQN scaffolding policy and its AdaptLearn-v1 environment, exposed as a JSON API.",
+)
 
 # Mirrors main.py's model-loading convention (kept self-contained here
 # rather than importing main.py, matching how every other analysis
@@ -76,6 +80,7 @@ class _Session:
     algo: str | None = None
     history: list[dict] = []
     last_obs: Any = None
+    done: bool = False
 
 
 session = _Session()
@@ -112,6 +117,11 @@ def _step_response(action: int, obs, reward: float, terminated: bool, truncated:
     }
 
 
+@app.get("/", include_in_schema=False)
+def root() -> RedirectResponse:
+    return RedirectResponse("/docs")
+
+
 @app.post("/reset")
 def reset(body: ResetRequest = ResetRequest()) -> dict:
     algo = body.algo or DEFAULT_ALGO
@@ -125,6 +135,7 @@ def reset(body: ResetRequest = ResetRequest()) -> dict:
     session.algo = algo
     session.history = []
     session.last_obs = obs
+    session.done = False
 
     return _reset_response(obs, info)
 
@@ -133,6 +144,8 @@ def reset(body: ResetRequest = ResetRequest()) -> dict:
 def step(body: StepRequest = StepRequest()) -> dict:
     if session.env is None:
         raise HTTPException(400, "No active episode -- call /reset first.")
+    if session.done:
+        raise HTTPException(400, "Episode has ended -- call /reset to start a new one.")
 
     if body.action is not None:
         if not session.env.action_space.contains(body.action):
@@ -144,6 +157,7 @@ def step(body: StepRequest = StepRequest()) -> dict:
 
     obs, reward, terminated, truncated, info = session.env.step(action)
     session.last_obs = obs
+    session.done = terminated or truncated
     result = _step_response(action, obs, reward, terminated, truncated, info)
     session.history.append(result)
     return result

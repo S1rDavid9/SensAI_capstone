@@ -1,7 +1,7 @@
 [project]
-name = "adaptlearn-rl"
+name = "sensai"
 version = "0.1.0"
-description = "AdaptLearn-v1: a custom Gymnasium environment and multi-algorithm RL training pipeline for learning adaptive-tutoring policies that keep a simulated learner in a state of flow."
+description = "SensAI Stage 2: a DQN instructional-scaffolding policy trained in AdaptLearn-v1, a custom Gymnasium simulation of learner engagement, with a FastAPI wrapper."
 readme = "README.md"
 requires-python = ">=3.11,<3.13"
 dependencies = [
@@ -25,6 +25,11 @@ dev = [
     "pytest>=8.0.0",
     "pytest-cov>=5.0.0",
     "ruff>=0.4.0",
+]
+notebook = [
+    "ipykernel>=7.4.0",
+    "nbconvert>=7.17.1",
+    "notebook>=7",
 ]
 
 [build-system]
