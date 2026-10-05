@@ -11,7 +11,7 @@ The simulator names its four learner states `FRUSTRATED`, `BORED`, `CONFUSED` an
 
 - **Repository:** https://github.com/S1rDavid9/SensAI_capstone
 - **Model notebook:** [`ModelNotebook.ipynb`](ModelNotebook.ipynb)
-- **Demo video:** _link to be added_
+- **Demo video:** https://youtu.be/XzzJWfNrnK0
 
 ## How it fits together
 
