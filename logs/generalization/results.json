@@ -1,0 +1,515 @@
+{
+  "part1_held_out_eval": {
+    "dqn": {
+      "mean_reward": 8.496500000000006,
+      "std_reward": 4.1963844854827155,
+      "outcomes": {
+        "TRUNCATED": 15,
+        "SUCCESS": 2,
+        "DROPOUT": 3
+      },
+      "rewards": [
+        7.9999999999999964,
+        11.879999999999999,
+        10.750000000000016,
+        10.550000000000011,
+        9.600000000000007,
+        12.650000000000015,
+        -3.08,
+        -1.4900000000000007,
+        11.350000000000017,
+        9.80000000000001,
+        10.850000000000016,
+        11.850000000000016,
+        11.059999999999999,
+        5.060000000000004,
+        5.649999999999997,
+        9.500000000000009,
+        10.250000000000012,
+        8.600000000000001,
+        11.850000000000016,
+        5.249999999999999
+      ]
+    },
+    "ppo": {
+      "mean_reward": 8.414000000000009,
+      "std_reward": 3.6839413676116006,
+      "outcomes": {
+        "TRUNCATED": 17,
+        "DROPOUT": 2,
+        "SUCCESS": 1
+      },
+      "rewards": [
+        6.599999999999998,
+        6.549999999999999,
+        9.15000000000001,
+        8.400000000000016,
+        9.000000000000002,
+        10.300000000000011,
+        0.34999999999999876,
+        9.900000000000013,
+        10.350000000000012,
+        9.05,
+        10.350000000000016,
+        10.950000000000015,
+        11.300000000000015,
+        10.850000000000016,
+        7.149999999999997,
+        10.650000000000018,
+        11.579999999999998,
+        9.950000000000008,
+        9.450000000000008,
+        -3.6
+      ]
+    },
+    "a2c": {
+      "mean_reward": 5.943000000000004,
+      "std_reward": 5.374129790021826,
+      "outcomes": {
+        "TRUNCATED": 13,
+        "DROPOUT": 6,
+        "SUCCESS": 1
+      },
+      "rewards": [
+        7.299999999999997,
+        7.700000000000012,
+        8.650000000000006,
+        -1.5800000000000005,
+        9.3,
+        10.500000000000012,
+        -3.08,
+        -4.0600000000000005,
+        9.200000000000008,
+        7.349999999999996,
+        10.550000000000015,
+        9.95000000000001,
+        1.37,
+        8.600000000000001,
+        -1.3900000000000006,
+        10.800000000000008,
+        11.45,
+        9.450000000000008,
+        9.900000000000011,
+        -3.1
+      ]
+    },
+    "reinforce": {
+      "mean_reward": 3.8809999999999976,
+      "std_reward": 4.850190614810925,
+      "outcomes": {
+        "DROPOUT": 5,
+        "TRUNCATED": 15
+      },
+      "rewards": [
+        -4.470000000000001,
+        5.6999999999999975,
+        -5.0600000000000005,
+        7.049999999999995,
+        -5.0600000000000005,
+        7.049999999999995,
+        8.149999999999997,
+        6.699999999999996,
+        5.599999999999996,
+        7.749999999999996,
+        5.999999999999996,
+        5.2499999999999964,
+        6.499999999999996,
+        7.249999999999996,
+        -3.89,
+        7.549999999999996,
+        6.199999999999996,
+        6.199999999999996,
+        6.749999999999996,
+        -3.6
+      ]
+    }
+  },
+  "part2_edge_case_stress_test": {
+    "dqn": {
+      "max_gap_engaged": {
+        "mean_reward": 9.010000000000005,
+        "std_reward": 1.1363978176677443,
+        "rewards": [
+          11.100000000000016,
+          8.149999999999999,
+          8.950000000000001,
+          9.000000000000005,
+          7.850000000000003
+        ],
+        "outcomes": {
+          "TRUNCATED": 5
+        },
+        "first_actions": [
+          "decrease_difficulty",
+          "decrease_difficulty",
+          "decrease_difficulty",
+          "decrease_difficulty",
+          "decrease_difficulty"
+        ],
+        "n_sensible_first_action": 5,
+        "n_reps": 5
+      },
+      "min_gap_engaged": {
+        "mean_reward": 0.05400000000000107,
+        "std_reward": 3.7906442724159723,
+        "rewards": [
+          5.7700000000000085,
+          -1.6300000000000003,
+          -3.56,
+          -3.56,
+          3.249999999999998
+        ],
+        "outcomes": {
+          "DROPOUT": 4,
+          "TRUNCATED": 1
+        },
+        "first_actions": [
+          "advance_topic",
+          "advance_topic",
+          "advance_topic",
+          "advance_topic",
+          "advance_topic"
+        ],
+        "n_sensible_first_action": 5,
+        "n_reps": 5
+      },
+      "start_frustrated": {
+        "mean_reward": 8.084000000000012,
+        "std_reward": 3.9205642451055502,
+        "rewards": [
+          10.900000000000016,
+          0.6199999999999988,
+          11.050000000000018,
+          10.150000000000015,
+          7.700000000000006
+        ],
+        "outcomes": {
+          "TRUNCATED": 4,
+          "DROPOUT": 1
+        },
+        "first_actions": [
+          "add_encouragement",
+          "add_encouragement",
+          "add_encouragement",
+          "add_encouragement",
+          "add_encouragement"
+        ],
+        "n_sensible_first_action": 5,
+        "n_reps": 5
+      },
+      "start_confused": {
+        "mean_reward": 8.466000000000008,
+        "std_reward": 4.080556824748312,
+        "rewards": [
+          10.900000000000016,
+          0.6199999999999988,
+          12.059999999999999,
+          10.150000000000015,
+          8.600000000000012
+        ],
+        "outcomes": {
+          "TRUNCATED": 3,
+          "DROPOUT": 1,
+          "SUCCESS": 1
+        },
+        "first_actions": [
+          "add_encouragement",
+          "add_encouragement",
+          "advance_topic",
+          "advance_topic",
+          "advance_topic"
+        ],
+        "n_sensible_first_action": 0,
+        "n_reps": 5
+      }
+    },
+    "ppo": {
+      "max_gap_engaged": {
+        "mean_reward": 5.738000000000002,
+        "std_reward": 5.308632215552328,
+        "rewards": [
+          9.950000000000008,
+          9.150000000000007,
+          8.049999999999999,
+          -4.5600000000000005,
+          6.1
+        ],
+        "outcomes": {
+          "TRUNCATED": 4,
+          "DROPOUT": 1
+        },
+        "first_actions": [
+          "decrease_difficulty",
+          "decrease_difficulty",
+          "decrease_difficulty",
+          "decrease_difficulty",
+          "decrease_difficulty"
+        ],
+        "n_sensible_first_action": 5,
+        "n_reps": 5
+      },
+      "min_gap_engaged": {
+        "mean_reward": 4.116,
+        "std_reward": 6.32621403368555,
+        "rewards": [
+          8.349999999999996,
+          10.8,
+          -3.56,
+          -3.56,
+          8.55
+        ],
+        "outcomes": {
+          "TRUNCATED": 2,
+          "SUCCESS": 1,
+          "DROPOUT": 2
+        },
+        "first_actions": [
+          "advance_topic",
+          "advance_topic",
+          "advance_topic",
+          "advance_topic",
+          "advance_topic"
+        ],
+        "n_sensible_first_action": 5,
+        "n_reps": 5
+      },
+      "start_frustrated": {
+        "mean_reward": 10.560000000000013,
+        "std_reward": 1.00816665289029,
+        "rewards": [
+          11.550000000000017,
+          8.850000000000005,
+          11.050000000000018,
+          11.350000000000017,
+          10.00000000000001
+        ],
+        "outcomes": {
+          "TRUNCATED": 5
+        },
+        "first_actions": [
+          "introduce_challenge",
+          "introduce_challenge",
+          "introduce_challenge",
+          "introduce_challenge",
+          "introduce_challenge"
+        ],
+        "n_sensible_first_action": 0,
+        "n_reps": 5
+      },
+      "start_confused": {
+        "mean_reward": 10.460000000000013,
+        "std_reward": 0.8737276463521161,
+        "rewards": [
+          10.40000000000001,
+          9.150000000000006,
+          11.050000000000018,
+          11.700000000000019,
+          10.00000000000001
+        ],
+        "outcomes": {
+          "TRUNCATED": 5
+        },
+        "first_actions": [
+          "decrease_difficulty",
+          "decrease_difficulty",
+          "decrease_difficulty",
+          "decrease_difficulty",
+          "decrease_difficulty"
+        ],
+        "n_sensible_first_action": 0,
+        "n_reps": 5
+      }
+    },
+    "a2c": {
+      "max_gap_engaged": {
+        "mean_reward": 3.202000000000001,
+        "std_reward": 5.5421382155265695,
+        "rewards": [
+          9.750000000000005,
+          -1.8800000000000008,
+          7.900000000000004,
+          -4.5600000000000005,
+          4.799999999999999
+        ],
+        "outcomes": {
+          "TRUNCATED": 3,
+          "DROPOUT": 2
+        },
+        "first_actions": [
+          "decrease_difficulty",
+          "decrease_difficulty",
+          "decrease_difficulty",
+          "decrease_difficulty",
+          "decrease_difficulty"
+        ],
+        "n_sensible_first_action": 5,
+        "n_reps": 5
+      },
+      "min_gap_engaged": {
+        "mean_reward": -3.4520000000000004,
+        "std_reward": 0.3603553801457668,
+        "rewards": [
+          -3.4400000000000004,
+          -2.8,
+          -3.56,
+          -3.56,
+          -3.9000000000000004
+        ],
+        "outcomes": {
+          "DROPOUT": 5
+        },
+        "first_actions": [
+          "advance_topic",
+          "advance_topic",
+          "advance_topic",
+          "decrease_difficulty",
+          "advance_topic"
+        ],
+        "n_sensible_first_action": 4,
+        "n_reps": 5
+      },
+      "start_frustrated": {
+        "mean_reward": 6.51800000000001,
+        "std_reward": 3.469313476755888,
+        "rewards": [
+          10.600000000000012,
+          1.5699999999999998,
+          5.550000000000017,
+          4.570000000000007,
+          10.300000000000015
+        ],
+        "outcomes": {
+          "TRUNCATED": 2,
+          "DROPOUT": 3
+        },
+        "first_actions": [
+          "decrease_difficulty",
+          "decrease_difficulty",
+          "decrease_difficulty",
+          "decrease_difficulty",
+          "decrease_difficulty"
+        ],
+        "n_sensible_first_action": 5,
+        "n_reps": 5
+      },
+      "start_confused": {
+        "mean_reward": 6.51800000000001,
+        "std_reward": 3.469313476755888,
+        "rewards": [
+          10.600000000000012,
+          1.5699999999999998,
+          5.550000000000017,
+          4.570000000000007,
+          10.300000000000015
+        ],
+        "outcomes": {
+          "TRUNCATED": 2,
+          "DROPOUT": 3
+        },
+        "first_actions": [
+          "decrease_difficulty",
+          "decrease_difficulty",
+          "decrease_difficulty",
+          "decrease_difficulty",
+          "decrease_difficulty"
+        ],
+        "n_sensible_first_action": 0,
+        "n_reps": 5
+      }
+    },
+    "reinforce": {
+      "max_gap_engaged": {
+        "mean_reward": -5.008,
+        "std_reward": 0.10400000000000029,
+        "rewards": [
+          -5.0600000000000005,
+          -4.8,
+          -5.0600000000000005,
+          -5.0600000000000005,
+          -5.0600000000000005
+        ],
+        "outcomes": {
+          "DROPOUT": 5
+        },
+        "first_actions": [
+          "introduce_challenge",
+          "introduce_challenge",
+          "introduce_challenge",
+          "introduce_challenge",
+          "introduce_challenge"
+        ],
+        "n_sensible_first_action": 0,
+        "n_reps": 5
+      },
+      "min_gap_engaged": {
+        "mean_reward": -3.428,
+        "std_reward": 0.1676186147180557,
+        "rewards": [
+          -3.56,
+          -3.3,
+          -3.56,
+          -3.56,
+          -3.16
+        ],
+        "outcomes": {
+          "DROPOUT": 5
+        },
+        "first_actions": [
+          "introduce_challenge",
+          "introduce_challenge",
+          "introduce_challenge",
+          "introduce_challenge",
+          "introduce_challenge"
+        ],
+        "n_sensible_first_action": 5,
+        "n_reps": 5
+      },
+      "start_frustrated": {
+        "mean_reward": 7.349999999999996,
+        "std_reward": 0.10954451150103332,
+        "rewards": [
+          7.349999999999995,
+          7.2499999999999964,
+          7.249999999999996,
+          7.349999999999995,
+          7.549999999999996
+        ],
+        "outcomes": {
+          "TRUNCATED": 5
+        },
+        "first_actions": [
+          "introduce_challenge",
+          "introduce_challenge",
+          "introduce_challenge",
+          "introduce_challenge",
+          "introduce_challenge"
+        ],
+        "n_sensible_first_action": 0,
+        "n_reps": 5
+      },
+      "start_confused": {
+        "mean_reward": 7.349999999999996,
+        "std_reward": 0.10954451150103332,
+        "rewards": [
+          7.349999999999995,
+          7.2499999999999964,
+          7.249999999999996,
+          7.349999999999995,
+          7.549999999999996
+        ],
+        "outcomes": {
+          "TRUNCATED": 5
+        },
+        "first_actions": [
+          "introduce_challenge",
+          "introduce_challenge",
+          "introduce_challenge",
+          "introduce_challenge",
+          "introduce_challenge"
+        ],
+        "n_sensible_first_action": 0,
+        "n_reps": 5
+      }
+    }
+  }
+}

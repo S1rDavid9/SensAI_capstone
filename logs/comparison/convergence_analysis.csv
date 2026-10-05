@@ -1,0 +1,5 @@
+algo,n_episodes,peak_value,peak_episode,threshold_90pct,converged_episode,converged_value,final_value
+DQN (dqn_02),579,9.6585,578,8.6927,433,9.168,9.6585
+PPO (ppo_11),648,8.9975,549,8.0977,543,8.6265,7.6745
+A2C (a2c_07),743,6.8395,672,6.1556,618,6.539,5.325
+REINFORCE (reinforce_00),844,3.943,801,3.5487,799,3.797,3.0775

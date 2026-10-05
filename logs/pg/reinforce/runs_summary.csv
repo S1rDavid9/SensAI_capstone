@@ -1,0 +1,13 @@
+run_id,algo,seed,total_timesteps,training_time_seconds,n_episodes,final_mean_reward,best_mean_reward,model_path,hp_learning_rate,hp_gamma,hp_net_arch,hp_batch_episodes,hp_entropy_coef,hp_use_baseline
+reinforce_00,REINFORCE,2000,20000,4.43,844,3.0775,3.943,models/pg/reinforce/reinforce_00/model.zip,0.001,0.99,"[64, 64]",4,0.0,True
+reinforce_01,REINFORCE,2001,20000,4.2,1008,0.3355,1.2225,models/pg/reinforce/reinforce_01/model.zip,0.0001,0.99,"[64, 64]",4,0.0,True
+reinforce_02,REINFORCE,2002,20000,3.9,784,2.49,3.6955,models/pg/reinforce/reinforce_02/model.zip,0.005,0.99,"[64, 64]",4,0.0,True
+reinforce_03,REINFORCE,2003,20000,3.85,880,0.7875,2.389,models/pg/reinforce/reinforce_03/model.zip,0.001,0.95,"[64, 64]",8,0.0,True
+reinforce_04,REINFORCE,2004,20000,3.85,808,2.3865,3.6485,models/pg/reinforce/reinforce_04/model.zip,0.001,0.9,"[64, 64]",4,0.0,True
+reinforce_05,REINFORCE,2005,20000,4.29,832,-0.418,3.305,models/pg/reinforce/reinforce_05/model.zip,0.001,0.99,"[128, 128]",16,0.0,True
+reinforce_06,REINFORCE,2006,20000,3.87,976,-0.1815,1.779,models/pg/reinforce/reinforce_06/model.zip,0.00025,0.99,[64],8,0.0,True
+reinforce_07,REINFORCE,2007,20000,3.95,960,-1.047,2.3515,models/pg/reinforce/reinforce_07/model.zip,0.001,0.99,"[32, 32]",4,0.01,True
+reinforce_08,REINFORCE,2008,20000,4.35,888,-0.507,2.631,models/pg/reinforce/reinforce_08/model.zip,0.0007,0.97,"[64, 64, 64]",8,0.0,True
+reinforce_09,REINFORCE,2009,20000,4.08,928,-1.4495,2.6005,models/pg/reinforce/reinforce_09/model.zip,0.001,0.99,"[64, 64]",8,0.02,True
+reinforce_10,REINFORCE,2010,20000,4.14,936,-0.38,1.967,models/pg/reinforce/reinforce_10/model.zip,0.0003,0.995,"[128, 64]",8,0.0,True
+reinforce_11,REINFORCE,2011,20000,3.87,816,2.13,4.0125,models/pg/reinforce/reinforce_11/model.zip,0.001,0.99,"[64, 64]",4,0.0,False

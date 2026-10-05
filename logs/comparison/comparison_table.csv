@@ -1,0 +1,5 @@
+algo,best_run_id,best_final_mean_reward,sweep_mean_final_mean_reward,sweep_std_final_mean_reward,sweep_min_final_mean_reward,total_timesteps_per_run,mean_training_time_seconds
+DQN,dqn_02,9.6585,6.4472,2.136,2.56,20000,4.92
+PPO,ppo_11,7.6745,4.1331,2.6506,-1.0595,20000,6.39
+A2C,a2c_07,5.325,2.8384,1.7706,-0.9055,20000,6.63
+REINFORCE,reinforce_00,3.0775,0.602,1.5402,-1.4495,20000,4.07

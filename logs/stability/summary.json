@@ -1,0 +1,26 @@
+{
+  "dqn": {
+    "reproduced_final_mean_reward": 9.6585,
+    "recorded_final_mean_reward": 9.6585,
+    "n_points": 143,
+    "tag": "train/loss"
+  },
+  "ppo": {
+    "reproduced_final_mean_reward": 7.674500000000002,
+    "recorded_final_mean_reward": 7.6745,
+    "n_points": 39,
+    "tag": "train/entropy_loss"
+  },
+  "a2c": {
+    "reproduced_final_mean_reward": 5.324999999999999,
+    "recorded_final_mean_reward": 5.325,
+    "n_points": 40,
+    "tag": "train/entropy_loss"
+  },
+  "reinforce": {
+    "reproduced_final_mean_reward": -0.5005000000000003,
+    "recorded_final_mean_reward": 3.0775,
+    "n_points": 227,
+    "tag": "entropy (batch mean, nats)"
+  }
+}

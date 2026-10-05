@@ -1,0 +1,41 @@
+[project]
+name = "adaptlearn-rl"
+version = "0.1.0"
+description = "AdaptLearn-v1: a custom Gymnasium environment and multi-algorithm RL training pipeline for learning adaptive-tutoring policies that keep a simulated learner in a state of flow."
+readme = "README.md"
+requires-python = ">=3.11,<3.13"
+dependencies = [
+    "gymnasium>=0.29.1",
+    "stable-baselines3[extra]>=2.3.0",
+    "torch>=2.2.0",
+    "numpy>=1.26.0",
+    "matplotlib>=3.8.0",
+    "pandas>=2.2.0",
+    "PyOpenGL>=3.1.7",
+    "PyOpenGL-accelerate>=3.1.7",
+    "glfw>=2.7.0",
+    "pyyaml>=6.0.1",
+    "tqdm>=4.66.0",
+    "fastapi>=0.141.1",
+    "uvicorn>=0.52.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.0.0",
+    "pytest-cov>=5.0.0",
+    "ruff>=0.4.0",
+]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["environment", "training"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+
+[tool.ruff]
+line-length = 100
