@@ -21,3 +21,4 @@ tests/_render_smoke_output/
 pilot/data/
 pilot/web/node_modules/
 pilot/web/dist/
+*.tsbuildinfo
