@@ -16,3 +16,8 @@ __pycache__/
 .vscode/
 .idea/
 tests/_render_smoke_output/
+
+# Pilot research data: never commit
+pilot/data/
+pilot/web/node_modules/
+pilot/web/dist/
