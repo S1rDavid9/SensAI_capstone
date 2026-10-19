@@ -108,8 +108,18 @@ def _to_sb3_kwargs(hyperparams: dict[str, Any]) -> dict[str, Any]:
     return kwargs
 
 
-def run_sweep(total_timesteps: int, grid: list[dict[str, Any]] | None = None) -> list[RunResult]:
+def output_dirs(env_version: str) -> tuple[Path, Path, Path]:
+    """v1 keeps its original paths; later simulator versions get their own
+    tree under models/<version>/ and logs/<version>/ so nothing is overwritten."""
+    if env_version == "v1":
+        return MODELS_DIR, LOGS_DIR, PLOTS_DIR
+    logs = Path("logs") / env_version / "dqn"
+    return Path("models") / env_version / "dqn", logs, logs / "plots"
+
+
+def run_sweep(total_timesteps: int, grid: list[dict[str, Any]] | None = None, env_version: str = "v1") -> list[RunResult]:
     grid = grid if grid is not None else DQN_HYPERPARAM_GRID
+    models_dir, logs_dir, _ = output_dirs(env_version)
     results: list[RunResult] = []
 
     for i, hyperparams in enumerate(tqdm(grid, desc="DQN sweep", unit="run")):
@@ -123,9 +133,10 @@ def run_sweep(total_timesteps: int, grid: list[dict[str, Any]] | None = None) ->
             seed=seed,
             hyperparams=hyperparams,
             total_timesteps=total_timesteps,
-            models_dir=MODELS_DIR,
-            logs_dir=LOGS_DIR,
+            models_dir=models_dir,
+            logs_dir=logs_dir,
             sb3_kwargs=_to_sb3_kwargs(hyperparams),
+            env_version=env_version,
         )
         results.append(result)
         tqdm.write(
@@ -149,23 +160,25 @@ def main() -> None:
         action="store_true",
         help="Fast smoke test: only the first 3 grid entries, 2000 timesteps each.",
     )
+    parser.add_argument("--env-version", choices=["v1", "v2"], default="v1", help="Simulator version (default: v1).")
     args = parser.parse_args()
+    _, logs_dir, plots_dir = output_dirs(args.env_version)
 
     grid = DQN_HYPERPARAM_GRID[:3] if args.quick else DQN_HYPERPARAM_GRID
     total_timesteps = 2000 if args.quick else args.total_timesteps
 
-    print(f"Running DQN sweep: {len(grid)} configurations x {total_timesteps} timesteps each.")
+    print(f"Running DQN sweep on simulator {args.env_version}: {len(grid)} configurations x {total_timesteps} timesteps each.")
     start = time.time()
-    results = run_sweep(total_timesteps, grid)
+    results = run_sweep(total_timesteps, grid, args.env_version)
     elapsed = time.time() - start
 
-    summary_df = write_summary_csv(results, LOGS_DIR / "runs_summary.csv")
-    best = write_best_run_marker(results, LOGS_DIR / "best_run.json")
-    generate_sweep_plots(results, PLOTS_DIR, algo_label="DQN")
+    summary_df = write_summary_csv(results, logs_dir / "runs_summary.csv")
+    best = write_best_run_marker(results, logs_dir / "best_run.json")
+    generate_sweep_plots(results, plots_dir, algo_label="DQN")
 
     print(f"\nDQN sweep complete in {elapsed / 60:.1f} min.")
-    print(f"Summary CSV: {LOGS_DIR / 'runs_summary.csv'}")
-    print(f"Plots: {PLOTS_DIR}/")
+    print(f"Summary CSV: {logs_dir / 'runs_summary.csv'}")
+    print(f"Plots: {plots_dir}/")
     print(f"Best run: {best.run_id} (final_mean_reward={best.final_mean_reward:.3f}) -> {best.model_path}")
     print(summary_df[["run_id", "final_mean_reward", "best_mean_reward", "training_time_seconds"]])
 

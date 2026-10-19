@@ -309,11 +309,19 @@ ALGORITHMS: dict[str, dict[str, Any]] = {
 }
 
 
-def run_sweep(algo_name: str, total_timesteps: int, grid: list[dict[str, Any]] | None = None) -> list[RunResult]:
+def output_dirs(algo_name: str, env_version: str) -> tuple[Path, Path]:
+    """v1 keeps its original paths; later simulator versions get their own
+    tree under models/<version>/ and logs/<version>/ so nothing is overwritten."""
+    if env_version == "v1":
+        return MODELS_DIR / algo_name, LOGS_DIR / algo_name
+    return Path("models") / env_version / algo_name, Path("logs") / env_version / algo_name
+
+
+def run_sweep(algo_name: str, total_timesteps: int, grid: list[dict[str, Any]] | None = None,
+              env_version: str = "v1") -> list[RunResult]:
     spec = ALGORITHMS[algo_name]
     grid = grid if grid is not None else spec["grid"]
-    models_dir = MODELS_DIR / algo_name
-    logs_dir = LOGS_DIR / algo_name
+    models_dir, logs_dir = output_dirs(algo_name, env_version)
     results: list[RunResult] = []
 
     for i, hyperparams in enumerate(tqdm(grid, desc=f"{algo_name.upper()} sweep", unit="run")):
@@ -331,6 +339,7 @@ def run_sweep(algo_name: str, total_timesteps: int, grid: list[dict[str, Any]] |
             models_dir=models_dir,
             logs_dir=logs_dir,
             sb3_kwargs=sb3_kwargs,
+            env_version=env_version,
         )
         results.append(result)
         tqdm.write(
@@ -341,17 +350,17 @@ def run_sweep(algo_name: str, total_timesteps: int, grid: list[dict[str, Any]] |
     return results
 
 
-def run_algorithm(algo_name: str, total_timesteps: int, quick: bool) -> list[RunResult]:
+def run_algorithm(algo_name: str, total_timesteps: int, quick: bool, env_version: str = "v1") -> list[RunResult]:
     spec = ALGORITHMS[algo_name]
     grid = spec["grid"][:3] if quick else spec["grid"]
     budget = 2000 if quick else total_timesteps
 
     print(f"\nRunning {algo_name.upper()} sweep: {len(grid)} configurations x {budget} timesteps each.")
     start = time.time()
-    results = run_sweep(algo_name, budget, grid)
+    results = run_sweep(algo_name, budget, grid, env_version)
     elapsed = time.time() - start
 
-    logs_dir = LOGS_DIR / algo_name
+    _, logs_dir = output_dirs(algo_name, env_version)
     plots_dir = logs_dir / "plots"
     summary_df = write_summary_csv(results, logs_dir / "runs_summary.csv")
     best = write_best_run_marker(results, logs_dir / "best_run.json")
@@ -385,11 +394,12 @@ def main() -> None:
         action="store_true",
         help="Fast smoke test: only the first 3 grid entries per algorithm, 2000 timesteps each.",
     )
+    parser.add_argument("--env-version", choices=["v1", "v2"], default="v1", help="Simulator version (default: v1).")
     args = parser.parse_args()
 
     algos = ["reinforce", "ppo", "a2c"] if args.algo == "all" else [args.algo]
     for algo_name in algos:
-        run_algorithm(algo_name, args.total_timesteps, args.quick)
+        run_algorithm(algo_name, args.total_timesteps, args.quick, args.env_version)
 
 
 if __name__ == "__main__":

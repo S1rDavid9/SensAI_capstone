@@ -1,0 +1,318 @@
+{
+  "DQN v1 (dqn_02) on v1": {
+    "mean_reward": 8.496500000000006,
+    "std_reward": 4.1963844854827155,
+    "outcomes": {
+      "TRUNCATED": 15,
+      "SUCCESS": 2,
+      "DROPOUT": 3
+    },
+    "mean_topics_completed": 14.8,
+    "mean_difficulty": 2.1660649819494586,
+    "share_steps_difficulty_3_plus": 0.3369434416365824,
+    "advance_then_decrease_rate": 0.5778546712802768,
+    "confused_steps": 26,
+    "confused_advance_rate": 0.6923076923076923,
+    "confused_hint_or_simplify_rate": 0.0,
+    "actions_used_over_2pct": [
+      "add_encouragement",
+      "advance_topic",
+      "change_task_type",
+      "decrease_difficulty",
+      "introduce_challenge"
+    ],
+    "action_by_state": {
+      "FRUSTRATED": {
+        "add_encouragement": 0.805,
+        "decrease_difficulty": 0.195
+      },
+      "BORED": {
+        "advance_topic": 0.667,
+        "introduce_challenge": 0.299,
+        "change_task_type": 0.011,
+        "decrease_difficulty": 0.011,
+        "offer_hint": 0.011
+      },
+      "CONFUSED": {
+        "advance_topic": 0.692,
+        "decrease_difficulty": 0.192,
+        "add_encouragement": 0.115
+      },
+      "ENGAGED": {
+        "decrease_difficulty": 0.49,
+        "advance_topic": 0.325,
+        "change_task_type": 0.179,
+        "add_encouragement": 0.006
+      }
+    }
+  },
+  "DQN v1 (dqn_02) on v2": {
+    "mean_reward": 5.903999999999999,
+    "std_reward": 3.502329796007224,
+    "outcomes": {
+      "TRUNCATED": 15,
+      "SUCCESS": 2,
+      "DROPOUT": 3
+    },
+    "mean_topics_completed": 14.8,
+    "mean_difficulty": 2.168471720818291,
+    "share_steps_difficulty_3_plus": 0.3381468110709988,
+    "advance_then_decrease_rate": 0.5778546712802768,
+    "confused_steps": 27,
+    "confused_advance_rate": 0.7037037037037037,
+    "confused_hint_or_simplify_rate": 0.0,
+    "actions_used_over_2pct": [
+      "add_encouragement",
+      "advance_topic",
+      "change_task_type",
+      "decrease_difficulty",
+      "introduce_challenge"
+    ],
+    "action_by_state": {
+      "FRUSTRATED": {
+        "add_encouragement": 0.805,
+        "decrease_difficulty": 0.195
+      },
+      "BORED": {
+        "advance_topic": 0.667,
+        "introduce_challenge": 0.299,
+        "change_task_type": 0.011,
+        "decrease_difficulty": 0.011,
+        "offer_hint": 0.011
+      },
+      "CONFUSED": {
+        "advance_topic": 0.704,
+        "decrease_difficulty": 0.185,
+        "add_encouragement": 0.111
+      },
+      "ENGAGED": {
+        "decrease_difficulty": 0.491,
+        "advance_topic": 0.324,
+        "change_task_type": 0.179,
+        "add_encouragement": 0.006
+      }
+    }
+  },
+  "DQN v2 (dqn_02) on v2": {
+    "mean_reward": 6.724500000000001,
+    "std_reward": 3.606410230409182,
+    "outcomes": {
+      "TRUNCATED": 16,
+      "DROPOUT": 2,
+      "SUCCESS": 2
+    },
+    "mean_topics_completed": 20.0,
+    "mean_difficulty": 2.908114558472554,
+    "share_steps_difficulty_3_plus": 0.5202863961813843,
+    "advance_then_decrease_rate": 0.32142857142857145,
+    "confused_steps": 21,
+    "confused_advance_rate": 0.0,
+    "confused_hint_or_simplify_rate": 0.14285714285714285,
+    "actions_used_over_2pct": [
+      "add_encouragement",
+      "advance_topic",
+      "decrease_difficulty",
+      "introduce_challenge",
+      "offer_hint",
+      "repeat_simplified"
+    ],
+    "action_by_state": {
+      "FRUSTRATED": {
+        "add_encouragement": 0.4,
+        "repeat_simplified": 0.367,
+        "advance_topic": 0.167,
+        "decrease_difficulty": 0.067
+      },
+      "BORED": {
+        "advance_topic": 0.508,
+        "introduce_challenge": 0.333,
+        "offer_hint": 0.111,
+        "repeat_simplified": 0.032,
+        "add_encouragement": 0.016
+      },
+      "CONFUSED": {
+        "add_encouragement": 0.762,
+        "offer_hint": 0.143,
+        "decrease_difficulty": 0.095
+      },
+      "ENGAGED": {
+        "advance_topic": 0.516,
+        "decrease_difficulty": 0.448,
+        "introduce_challenge": 0.022,
+        "offer_hint": 0.014
+      }
+    }
+  },
+  "PPO v2 (ppo_08) on v2": {
+    "mean_reward": 4.464999999999997,
+    "std_reward": 4.179916865201984,
+    "outcomes": {
+      "TRUNCATED": 16,
+      "DROPOUT": 4
+    },
+    "mean_topics_completed": 0.35,
+    "mean_difficulty": 2.779268292682927,
+    "share_steps_difficulty_3_plus": 0.5073170731707317,
+    "advance_then_decrease_rate": 0.2857142857142857,
+    "confused_steps": 11,
+    "confused_advance_rate": 0.0,
+    "confused_hint_or_simplify_rate": 0.0,
+    "actions_used_over_2pct": [
+      "decrease_difficulty",
+      "introduce_challenge"
+    ],
+    "action_by_state": {
+      "FRUSTRATED": {
+        "decrease_difficulty": 0.577,
+        "introduce_challenge": 0.423
+      },
+      "BORED": {
+        "decrease_difficulty": 0.368,
+        "advance_topic": 0.368,
+        "introduce_challenge": 0.263
+      },
+      "CONFUSED": {
+        "introduce_challenge": 0.909,
+        "decrease_difficulty": 0.091
+      },
+      "ENGAGED": {
+        "introduce_challenge": 1.0
+      }
+    }
+  },
+  "A2C v2 (a2c_03) on v2": {
+    "mean_reward": 6.9060000000000015,
+    "std_reward": 3.3292587763644956,
+    "outcomes": {
+      "TRUNCATED": 16,
+      "DROPOUT": 2,
+      "SUCCESS": 2
+    },
+    "mean_topics_completed": 15.6,
+    "mean_difficulty": 4.762013729977117,
+    "share_steps_difficulty_3_plus": 0.9897025171624714,
+    "advance_then_decrease_rate": 0.0,
+    "confused_steps": 22,
+    "confused_advance_rate": 0.0,
+    "confused_hint_or_simplify_rate": 1.0,
+    "actions_used_over_2pct": [
+      "advance_topic",
+      "repeat_simplified"
+    ],
+    "action_by_state": {
+      "FRUSTRATED": {
+        "repeat_simplified": 1.0
+      },
+      "BORED": {
+        "repeat_simplified": 0.654,
+        "advance_topic": 0.346
+      },
+      "CONFUSED": {
+        "repeat_simplified": 1.0
+      },
+      "ENGAGED": {
+        "repeat_simplified": 0.602,
+        "advance_topic": 0.398
+      }
+    }
+  },
+  "REINFORCE v2 (reinforce_04) on v2": {
+    "mean_reward": 4.150999999999998,
+    "std_reward": 4.481010935045795,
+    "outcomes": {
+      "TRUNCATED": 15,
+      "DROPOUT": 5
+    },
+    "mean_topics_completed": 0.0,
+    "mean_difficulty": 3.0925221799746514,
+    "share_steps_difficulty_3_plus": 0.6134347275031685,
+    "advance_then_decrease_rate": 0.0,
+    "confused_steps": 15,
+    "confused_advance_rate": 0.0,
+    "confused_hint_or_simplify_rate": 0.0,
+    "actions_used_over_2pct": [
+      "add_encouragement"
+    ],
+    "action_by_state": {
+      "FRUSTRATED": {
+        "add_encouragement": 1.0
+      },
+      "BORED": {
+        "add_encouragement": 0.976,
+        "introduce_challenge": 0.024
+      },
+      "CONFUSED": {
+        "add_encouragement": 1.0
+      },
+      "ENGAGED": {
+        "add_encouragement": 1.0
+      }
+    }
+  },
+  "Random on v2": {
+    "mean_reward": -0.2525000000000007,
+    "std_reward": 4.631984321001098,
+    "outcomes": {
+      "DROPOUT": 15,
+      "TRUNCATED": 5
+    },
+    "mean_topics_completed": 3.5,
+    "mean_difficulty": 4.258947368421053,
+    "share_steps_difficulty_3_plus": 0.9263157894736842,
+    "advance_then_decrease_rate": 0.16176470588235295,
+    "confused_steps": 18,
+    "confused_advance_rate": 0.1111111111111111,
+    "confused_hint_or_simplify_rate": 0.4444444444444444,
+    "actions_used_over_2pct": [
+      "add_encouragement",
+      "advance_topic",
+      "change_task_type",
+      "decrease_difficulty",
+      "increase_difficulty",
+      "introduce_challenge",
+      "offer_hint",
+      "repeat_simplified"
+    ],
+    "action_by_state": {
+      "FRUSTRATED": {
+        "offer_hint": 0.19,
+        "add_encouragement": 0.155,
+        "increase_difficulty": 0.155,
+        "advance_topic": 0.155,
+        "repeat_simplified": 0.138,
+        "change_task_type": 0.086,
+        "decrease_difficulty": 0.069,
+        "introduce_challenge": 0.052
+      },
+      "BORED": {
+        "introduce_challenge": 0.208,
+        "decrease_difficulty": 0.208,
+        "add_encouragement": 0.132,
+        "repeat_simplified": 0.094,
+        "increase_difficulty": 0.094,
+        "advance_topic": 0.094,
+        "change_task_type": 0.094,
+        "offer_hint": 0.075
+      },
+      "CONFUSED": {
+        "repeat_simplified": 0.222,
+        "offer_hint": 0.222,
+        "increase_difficulty": 0.167,
+        "introduce_challenge": 0.111,
+        "advance_topic": 0.111,
+        "decrease_difficulty": 0.111,
+        "change_task_type": 0.056
+      },
+      "ENGAGED": {
+        "advance_topic": 0.156,
+        "introduce_challenge": 0.139,
+        "increase_difficulty": 0.139,
+        "add_encouragement": 0.136,
+        "repeat_simplified": 0.127,
+        "change_task_type": 0.118,
+        "offer_hint": 0.098,
+        "decrease_difficulty": 0.087
+      }
+    }
+  }
+}

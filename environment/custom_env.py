@@ -126,6 +126,17 @@ here for convenience:
     sweep rerun showed it destabilized PPO/A2C/REINFORCE's broader policies
     while only partially fixing DQN -- see `RewardConfig`'s docstring; full
     analysis lives in the report.
+12. VERSION 2 (October 2026). Running the trained v1 DQN in shadow mode
+    in the pilot tool showed two behaviours no teacher would choose, both
+    traced to the reward: (a) it alternated advance_topic (+1 difficulty,
+    +topic bonus) with decrease_difficulty (-1), collecting topic bonuses
+    while keeping the learner at difficulty 1-2; (b) it answered CONFUSED
+    with advance_topic, because confusion is the cheapest negative state
+    and moving on earned the topic bonus. v2 withholds the topic bonus if
+    difficulty was lowered since the last advance or if the learner was
+    CONFUSED, and makes advancing from CONFUSED raise the chance of staying
+    confused. v1 is unchanged and remains the default, so every Phase 1
+    result reproduces; pass `version="v2"` for the new rules.
 """
 
 from __future__ import annotations
@@ -262,6 +273,14 @@ class TransitionConfig:
 
     softmax_temperature: float = 1.0
 
+    # --- v2: moving on before confusion is cleared compounds it. 0.0 in v1
+    # (no effect). See `TransitionConfig.v2()` and design decision 12. ---
+    confusion_advance_penalty: float = 0.0
+
+    @classmethod
+    def v2(cls) -> "TransitionConfig":
+        return cls(confusion_advance_penalty=1.5)
+
 
 @dataclass(frozen=True)
 class RewardConfig:
@@ -322,6 +341,29 @@ class RewardConfig:
     topic_advance_bonus: float = 0.5  # new; capped at n_topics awards/episode -- see step()
     step_cost: float = -0.02  # new; flat per-step "living penalty" -- see class docstring
 
+    # --- v2 (design decision 12). Both False in v1, which keeps v1 exactly
+    # as trained and reported. ---
+    # Withhold the topic bonus if difficulty was lowered since the last
+    # advance: otherwise advance (+1 difficulty, +bonus) then
+    # decrease_difficulty (-1) farms the bonus at a flat difficulty.
+    bonus_requires_no_lowering: bool = False
+    # Withhold the topic bonus when advancing away from a CONFUSED learner:
+    # moving on while the learner is stuck is not progress.
+    no_bonus_when_confused: bool = False
+
+    @classmethod
+    def v2(cls) -> "RewardConfig":
+        return cls(bonus_requires_no_lowering=True, no_bonus_when_confused=True)
+
+
+# Simulator versions. v1 is the version Phase 1 was trained and reported on;
+# v2 closes two reward loopholes found when the trained DQN was run in shadow
+# mode in the pilot tool (design decision 12).
+ENV_VERSIONS: dict[str, tuple[type, type]] = {
+    "v1": (TransitionConfig, RewardConfig),
+    "v2": (TransitionConfig.v2, RewardConfig.v2),
+}
+
 
 class AdaptLearnEnv(gym.Env):
     """AdaptLearn-v1: adaptive-tutoring policy environment.
@@ -369,8 +411,13 @@ class AdaptLearnEnv(gym.Env):
         render_mode: str | None = None,
         transition_config: TransitionConfig | None = None,
         reward_config: RewardConfig | None = None,
+        version: str = "v1",
     ) -> None:
         super().__init__()
+
+        if version not in ENV_VERSIONS:
+            raise ValueError(f"Unknown version {version!r}; choose one of {list(ENV_VERSIONS)}")
+        self.version = version
 
         if render_mode is not None and render_mode not in self.metadata["render_modes"]:
             raise ValueError(f"Unsupported render_mode: {render_mode!r}")
@@ -378,8 +425,9 @@ class AdaptLearnEnv(gym.Env):
         self.max_episode_steps = max_episode_steps
         self.n_topics = n_topics
         self.render_mode = render_mode
-        self.tc = transition_config or TransitionConfig()
-        self.rc = reward_config or RewardConfig()
+        default_tc, default_rc = ENV_VERSIONS[version]
+        self.tc = transition_config or default_tc()
+        self.rc = reward_config or default_rc()
 
         # Normalization caps for observation features that are otherwise
         # unbounded counters. Chosen to be "typical session" magnitudes
@@ -407,6 +455,7 @@ class AdaptLearnEnv(gym.Env):
         self.time_on_task: int = 0
         self.consecutive_disengaged: int = 0
         self.topics_completed: int = 0
+        self.lowered_since_advance: bool = False
         self.session_had_negative: bool = False
         self.steps: int = 0
         self.last_action: int | None = None
@@ -443,6 +492,7 @@ class AdaptLearnEnv(gym.Env):
         self.time_on_task = 0
         self.consecutive_disengaged = 0
         self.topics_completed = 0
+        self.lowered_since_advance = False
         self.session_had_negative = self.engagement_state in DISENGAGED_STATES
         self.steps = 0
         self.last_action = None
@@ -528,10 +578,18 @@ class AdaptLearnEnv(gym.Env):
             # withheld if the advance itself immediately harmed the learner
             # (landed in FRUSTRATED/BORED) -- progression credit is for
             # advances that didn't hurt the learner, not any advance at all.
-            if self.topics_completed <= self.n_topics and next_state not in DISENGAGED_STATES:
+            earns_bonus = self.topics_completed <= self.n_topics and next_state not in DISENGAGED_STATES
+            if self.rc.bonus_requires_no_lowering and self.lowered_since_advance:
+                earns_bonus = False
+            if self.rc.no_bonus_when_confused and prev_state == EngagementState.CONFUSED:
+                earns_bonus = False
+            if earns_bonus:
                 reward += self.rc.topic_advance_bonus
+            self.lowered_since_advance = False
         else:
             self.time_on_task += 1
+            if action == ACTION_DECREASE_DIFFICULTY:
+                self.lowered_since_advance = True
 
         if next_state in DISENGAGED_STATES:
             self.consecutive_disengaged += 1
@@ -656,6 +714,10 @@ class AdaptLearnEnv(gym.Env):
             logits[EngagementState.BORED] -= tc.challenge_bored_relief
         elif action == ACTION_REPEAT_SIMPLIFIED:
             logits[EngagementState.CONFUSED] -= tc.confusion_clarity_relief
+        elif action == ACTION_ADVANCE_TOPIC and prev_state == EngagementState.CONFUSED:
+            # v2 only (0.0 in v1): a new topic on top of an unresolved
+            # confusion makes staying confused more likely, not less.
+            logits[EngagementState.CONFUSED] += tc.confusion_advance_penalty
 
         return logits
 

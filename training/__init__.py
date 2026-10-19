@@ -75,6 +75,7 @@ def run_single_training(
     logs_dir: Path,
     sb3_kwargs: dict[str, Any] | None = None,
     tensorboard_log: str | None = None,
+    env_version: str = "v1",
 ) -> RunResult:
     """Train one model for one (algorithm, hyperparameter, seed) run, saving
     the model and a full log of the run to disk, and returning a RunResult.
@@ -99,7 +100,7 @@ def run_single_training(
     run_log_dir.mkdir(parents=True, exist_ok=True)
 
     monitor_path = run_log_dir / "monitor.csv"
-    env = Monitor(AdaptLearnEnv(), filename=str(monitor_path))
+    env = Monitor(AdaptLearnEnv(version=env_version), filename=str(monitor_path))
 
     extra_kwargs = {} if tensorboard_log is None else {"tensorboard_log": tensorboard_log}
     model = algo_class(policy, env, seed=seed, verbose=0, **extra_kwargs, **(sb3_kwargs or hyperparams))

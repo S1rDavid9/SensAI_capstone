@@ -1,0 +1,19 @@
+{
+  "run_id": "ppo_08",
+  "algo": "PPO",
+  "seed": 2008,
+  "model_path": "models/v2/ppo/ppo_08/model.zip",
+  "final_mean_reward": 4.557,
+  "hyperparams": {
+    "learning_rate": 0.0003,
+    "gamma": 0.99,
+    "n_steps": 256,
+    "batch_size": 64,
+    "n_epochs": 10,
+    "ent_coef": 0.0,
+    "net_arch": [
+      128,
+      128
+    ]
+  }
+}

@@ -1,0 +1,145 @@
+"""Compares policies trained on simulator v1 and v2 (design decision 12).
+
+Not part of the pytest suite: like generalization_test.py, it produces
+report tables. Run by hand after both sweeps exist:
+
+    uv run python tests/compare_env_versions.py
+
+Every policy is evaluated greedily on the same held-out seeds (5000-5019)
+used by generalization_test.py. Besides reward, it measures the two
+behaviours v2 was designed to remove:
+
+  * the advance/decrease loop: how often advance_topic is immediately
+    followed by decrease_difficulty, and how low difficulty stays;
+  * advancing away from a CONFUSED learner.
+
+Writes logs/v2/evaluation.json and logs/v2/evaluation.md.
+"""
+
+from __future__ import annotations
+
+import json
+from collections import Counter
+from pathlib import Path
+
+import numpy as np
+from stable_baselines3 import A2C, DQN, PPO
+
+from environment.custom_env import ACTION_NAMES, AdaptLearnEnv
+
+HELD_OUT_SEEDS = list(range(5000, 5020))
+OUT_DIR = Path("logs/v2")
+LOADERS = {"dqn": DQN, "ppo": PPO, "a2c": A2C}
+STATES = ("FRUSTRATED", "BORED", "CONFUSED", "ENGAGED")
+
+
+def best_model_path(algo: str, version: str) -> tuple[str, str]:
+    if version == "v1":
+        log = Path("logs/dqn") if algo == "dqn" else Path("logs/pg") / algo
+    else:
+        log = Path("logs") / version / algo
+    best = json.loads((log / "best_run.json").read_text())
+    return best["run_id"], best["model_path"]
+
+
+def load(algo: str, path: str):
+    if algo == "reinforce":
+        from training.pg_training import REINFORCE
+
+        return REINFORCE.load(path)
+    return LOADERS[algo].load(path, device="cpu")
+
+
+def evaluate(policy_fn, env_version: str) -> dict:
+    env = AdaptLearnEnv(version=env_version)
+    rewards, outcomes, topics = [], Counter(), []
+    by_state = {s: Counter() for s in STATES}
+    after_advance = Counter()
+    difficulties = []
+    for seed in HELD_OUT_SEEDS:
+        obs, info = env.reset(seed=seed)
+        done, total, prev_action = False, 0.0, None
+        while not done:
+            state = info["engagement_state"]
+            action = policy_fn(obs)
+            by_state[state][ACTION_NAMES[action]] += 1
+            if prev_action == 7:
+                after_advance[ACTION_NAMES[action]] += 1
+            obs, reward, terminated, truncated, info = env.step(action)
+            total += reward
+            difficulties.append(info["difficulty"])
+            prev_action = action
+            done = terminated or truncated
+        rewards.append(total)
+        topics.append(info["topics_completed"])
+        outcomes["DROPOUT" if info["dropout"] else "SUCCESS" if info["success"] else "TRUNCATED"] += 1
+
+    all_actions = sum(by_state.values(), Counter())
+    n_actions = sum(all_actions.values())
+    confused = by_state["CONFUSED"]
+    n_conf = sum(confused.values())
+    n_after = sum(after_advance.values())
+    return {
+        "mean_reward": float(np.mean(rewards)),
+        "std_reward": float(np.std(rewards)),
+        "outcomes": dict(outcomes),
+        "mean_topics_completed": float(np.mean(topics)),
+        "mean_difficulty": float(np.mean(difficulties)),
+        "share_steps_difficulty_3_plus": float(np.mean(np.array(difficulties) >= 3)),
+        "advance_then_decrease_rate": after_advance["decrease_difficulty"] / n_after if n_after else 0.0,
+        "confused_steps": n_conf,
+        "confused_advance_rate": confused["advance_topic"] / n_conf if n_conf else 0.0,
+        "confused_hint_or_simplify_rate": (confused["offer_hint"] + confused["repeat_simplified"]) / n_conf if n_conf else 0.0,
+        "actions_used_over_2pct": sorted(a for a, c in all_actions.items() if c / n_actions > 0.02),
+        "action_by_state": {s: {a: round(c / max(1, sum(by_state[s].values())), 3) for a, c in by_state[s].most_common()}
+                            for s in STATES},
+    }
+
+
+def main() -> None:
+    results = {}
+    run_id, path = best_model_path("dqn", "v1")
+    v1_dqn = load("dqn", path)
+    v1_fn = lambda o: int(v1_dqn.predict(o, deterministic=True)[0])  # noqa: E731
+    results[f"DQN v1 ({run_id}) on v1"] = evaluate(v1_fn, "v1")
+    results[f"DQN v1 ({run_id}) on v2"] = evaluate(v1_fn, "v2")
+
+    for algo in ("dqn", "ppo", "a2c", "reinforce"):
+        try:
+            run_id, path = best_model_path(algo, "v2")
+        except FileNotFoundError:
+            continue
+        model = load(algo, path)
+        results[f"{algo.upper()} v2 ({run_id}) on v2"] = evaluate(
+            lambda o, m=model: int(m.predict(o, deterministic=True)[0]), "v2")
+
+    rng = np.random.default_rng(0)
+    results["Random on v2"] = evaluate(lambda o: int(rng.integers(8)), "v2")
+
+    OUT_DIR.mkdir(parents=True, exist_ok=True)
+    (OUT_DIR / "evaluation.json").write_text(json.dumps(results, indent=2))
+
+    lines = [
+        "# Simulator v1 vs v2: held-out evaluation (seeds 5000-5019, greedy)",
+        "",
+        "Generated by `tests/compare_env_versions.py`. Rewards under v1 and v2 are not on the same scale,",
+        "because v2 pays fewer topic bonuses; compare behaviour columns across versions, rewards only within one.",
+        "",
+        "| Policy | Mean reward | Dropout / Success / Truncated | Topics | Mean difficulty | Steps at difficulty ≥3 | Advance→decrease | CONFUSED→advance | CONFUSED→hint/simplify | Actions used |",
+        "|---|---|---|---|---|---|---|---|---|---|",
+    ]
+    for name, r in results.items():
+        o = r["outcomes"]
+        lines.append(
+            f"| {name} | {r['mean_reward']:.2f} ± {r['std_reward']:.2f} | "
+            f"{o.get('DROPOUT', 0)} / {o.get('SUCCESS', 0)} / {o.get('TRUNCATED', 0)} | "
+            f"{r['mean_topics_completed']:.1f} | {r['mean_difficulty']:.2f} | {r['share_steps_difficulty_3_plus']:.0%} | "
+            f"{r['advance_then_decrease_rate']:.0%} | {r['confused_advance_rate']:.0%} (n={r['confused_steps']}) | "
+            f"{r['confused_hint_or_simplify_rate']:.0%} | {len(r['actions_used_over_2pct'])} |"
+        )
+    (OUT_DIR / "evaluation.md").write_text("\n".join(lines) + "\n")
+    print("\n".join(lines))
+
+
+if __name__ == "__main__":
+    main()

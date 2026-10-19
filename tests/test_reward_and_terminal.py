@@ -280,3 +280,85 @@ def test_progression_beats_camping_in_expected_value() -> None:
         f"({camp_total:.2f}); if this fails, engaged_maintain_reward / "
         f"topic_advance_bonus / session_complete_bonus / step_cost need rebalancing."
     )
+
+
+# --------------------------------------------------------------------------
+# Simulator v2 (design decision 12)
+# --------------------------------------------------------------------------
+
+from environment.custom_env import (  # noqa: E402
+    ACTION_ADVANCE_TOPIC as _ADV,
+    ACTION_DECREASE_DIFFICULTY as _DEC,
+    AdaptLearnEnv as _Env,
+    EngagementState as _S,
+    RewardConfig as _RC,
+    TransitionConfig as _TC,
+)
+
+
+def _pinned(version, state, difficulty=3, ability=3.0, seed=0):
+    env = _Env(version=version)
+    env.reset(seed=seed)
+    env.engagement_state = state
+    env.difficulty = difficulty
+    env.ability = ability
+    return env
+
+
+def test_v1_is_the_default_and_unchanged():
+    env = _Env()
+    assert env.version == "v1"
+    assert env.rc == _RC() and env.tc == _TC()
+    assert not env.rc.bonus_requires_no_lowering and env.tc.confusion_advance_penalty == 0.0
+
+
+def _topic_bonus_paid(env, action):
+    """Run one step and report whether the topic bonus was included, by
+    removing every other reward component."""
+    prev = env.engagement_state
+    _, reward, *_ , info = env.step(action)
+    base = env._compute_reward(prev, env.engagement_state) + env.rc.step_cost
+    if info["dropout"]:
+        base += env.rc.dropout_terminal_penalty
+    return abs(reward - base - env.rc.topic_advance_bonus) < 1e-9
+
+
+def test_v2_withholds_bonus_after_lowering_difficulty():
+    for seed in range(30):
+        env = _pinned("v2", _S.ENGAGED, seed=seed)
+        env.step(_DEC)
+        if env.engagement_state in (_S.FRUSTRATED, _S.BORED):
+            continue
+        assert not _topic_bonus_paid(env, _ADV)
+        # The flag clears on advancing, so a clean second advance can pay again.
+        assert env.lowered_since_advance is False
+
+
+def test_v1_still_pays_bonus_after_lowering_difficulty():
+    paid = 0
+    for seed in range(30):
+        env = _pinned("v1", _S.ENGAGED, seed=seed)
+        env.step(_DEC)
+        if env.engagement_state in (_S.FRUSTRATED, _S.BORED):
+            continue
+        if _topic_bonus_paid(env, _ADV):
+            paid += 1
+    assert paid > 0
+
+
+def test_v2_withholds_bonus_when_advancing_from_confused():
+    for seed in range(30):
+        env = _pinned("v2", _S.CONFUSED, seed=seed)
+        assert not _topic_bonus_paid(env, _ADV)
+
+
+def test_v2_advancing_from_confused_raises_staying_confused():
+    import numpy as np
+
+    def p_confused(version):
+        env = _pinned(version, _S.CONFUSED)
+        logits = env._transition_logits(gap=0.0, prev_state=_S.CONFUSED, action=_ADV)
+        e = np.exp(logits - logits.max())
+        return (e / e.sum())[_S.CONFUSED]
+
+    assert p_confused("v2") > 3 * p_confused("v1")
