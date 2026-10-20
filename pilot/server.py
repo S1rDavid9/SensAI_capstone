@@ -27,7 +27,7 @@ from pydantic import BaseModel, Field
 
 from pilot import db
 from pilot.labeler import RECENT_WINDOW, STATE_LABELS, AnswerTelemetry, build_observation, provisional_state
-from pilot.policy import shadow_decision
+from pilot.policy import _model, shadow_decision
 from pilot.tasks import CHECKIN_AFTER, FORM, N_QUESTIONS
 
 RESEARCHER_KEY = os.environ.get("PILOT_RESEARCHER_KEY", "sensai-dev")
@@ -44,6 +44,7 @@ OBSERVER_CODES = {"on_task", "rushing", "struggling", "stuck", "off_task", "cant
 @asynccontextmanager
 async def lifespan(_app):
     db.init()
+    _model()  # load the DQN now, so the first learner's answer isn't slowed by it
     yield
 
 
