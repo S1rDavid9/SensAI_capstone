@@ -125,3 +125,40 @@ def test_full_learner_session(client):
 
     csv_text = client.get("/api/researcher/export/decisions.csv", headers=KEY).text
     assert csv_text.startswith("id,session_id,question_index,state")
+
+
+def test_shadow_mode_never_reaches_the_learner(client):
+    """The DQN's decisions are stored on the server only: no response a
+    learner's device receives may contain any part of them."""
+    from environment.custom_env import ACTION_NAMES
+
+    client.post("/api/researcher/sessions", headers=KEY,
+                json={"guardian_consent": True, "learner_assent": True, "recorded_by": "AN"})
+    auth = {"code": "P01", "token": client.post("/api/learner/join", json={"code": "P01"}).json()["token"]}
+    leaked_keys = {"action", "action_name", "action_index", "raw_action_name", "guardrail", "q_values", "state", "decision"}
+
+    received = []
+    for q in FORM:
+        received.append(client.post("/api/learner/question", json=auth).json())
+        received.append(client.post("/api/learner/hint", json={**auth, "question_index": q.index}).json())
+        received.append(client.post("/api/learner/answer", json={**auth, "question_index": q.index, "answer": "0",
+                                                                 "response_time_ms": 1000, "first_input_ms": 200}).json())
+    received.append(client.post("/api/learner/finish", json=auth).json())
+
+    def walk(obj):
+        if isinstance(obj, dict):
+            for k, v in obj.items():
+                yield k
+                yield from walk(v)
+        elif isinstance(obj, list):
+            for v in obj:
+                yield from walk(v)
+        else:
+            yield obj
+
+    seen = set(walk(received))
+    assert not seen & leaked_keys
+    assert not seen & set(ACTION_NAMES)
+    # ...while the server did record a decision for every answer.
+    sid = client.get("/api/researcher/sessions", headers=KEY).json()[0]["id"]
+    assert len(client.get(f"/api/researcher/sessions/{sid}", headers=KEY).json()["decisions"]) == len(FORM)

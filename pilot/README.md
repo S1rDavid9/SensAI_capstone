@@ -40,6 +40,8 @@ The Stage 1 classifier is trained on this pilot's data, so it can't exist yet. U
 | Struggling | FRUSTRATED |
 | Stuck | CONFUSED |
 
+**The DQN never affects what a learner sees.** Its decisions are stored on the server only and never sent to the learner's laptop: every learner gets the same 15 questions, the same hints on request and the same feedback. `tests/test_pilot.py::test_shadow_mode_never_reaches_the_learner` checks this by running a full session and confirming no response to the learner contains any part of a decision.
+
 The DQN used is the one trained on simulator v2 (`logs/v2/dqn/best_run.json`); set `SENSAI_POLICY=v1` for the Phase 1 model.
 
 ### Guardrails
