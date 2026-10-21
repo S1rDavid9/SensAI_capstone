@@ -63,7 +63,13 @@ cd pilot/web && npm install && npm run build && cd ../..
 PILOT_RESEARCHER_KEY=choose-a-key uv run uvicorn pilot.server:app --host 0.0.0.0 --port 8001
 ```
 
-Open http://localhost:8001. Other devices on the same Wi-Fi use the laptop's IP address instead of `localhost`. Without `PILOT_RESEARCHER_KEY` the key is `sensai-dev`, which is for local testing only.
+Two keys: the **researcher key** (`PILOT_RESEARCHER_KEY`) opens everything; the **observer key** (`PILOT_OBSERVER_KEY`) is for the class teacher and only opens the observer screen, without access to answers, scores, model decisions or exports. Set both to your own values for real sessions:
+
+```bash
+PILOT_RESEARCHER_KEY=your-key PILOT_OBSERVER_KEY=teacher-key uv run uvicorn pilot.server:app --host 0.0.0.0 --port 8001
+```
+
+Open http://localhost:8001. Other devices on the same Wi-Fi use the laptop's IP address instead of `localhost`. Without them the keys are `sensai-dev` (researcher) and `sensai-observe` (observer), for local testing only.
 
 For frontend work, run `npm run dev` in `pilot/web` (port 5180, forwards `/api` to the server).
 

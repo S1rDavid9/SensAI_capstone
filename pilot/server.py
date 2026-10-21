@@ -7,7 +7,9 @@ Run from the repository root:
 Learner endpoints are reached with a participant code and the token issued
 when the learner joins. Observer and researcher endpoints need the
 researcher key (`PILOT_RESEARCHER_KEY`, sent as the `X-Researcher-Key`
-header).
+header). Observer endpoints also accept the observer key
+(`PILOT_OBSERVER_KEY`), which is what the class teacher uses: it can record
+observations but cannot open the researcher endpoints or see any data.
 """
 
 from __future__ import annotations
@@ -31,6 +33,7 @@ from pilot.policy import _model, shadow_decision
 from pilot.tasks import CHECKIN_AFTER, FORM, N_QUESTIONS
 
 RESEARCHER_KEY = os.environ.get("PILOT_RESEARCHER_KEY", "sensai-dev")
+OBSERVER_KEY = os.environ.get("PILOT_OBSERVER_KEY", "sensai-observe")
 WEB_DIST = Path(__file__).parent / "web" / "dist"
 
 LEARNER_EVENT_TYPES = {
@@ -58,6 +61,14 @@ app = FastAPI(title="SensAI Pilot", lifespan=lifespan)
 def require_researcher(x_researcher_key: str = Header(default="")) -> None:
     if not secrets.compare_digest(x_researcher_key, RESEARCHER_KEY):
         raise HTTPException(401, "Researcher key required.")
+
+
+def require_observer(x_researcher_key: str = Header(default="")) -> None:
+    """The researcher key or the observer key. The observer key only
+    unlocks the observer endpoints below."""
+    if not (secrets.compare_digest(x_researcher_key, RESEARCHER_KEY)
+            or secrets.compare_digest(x_researcher_key, OBSERVER_KEY)):
+        raise HTTPException(401, "Observer key required.")
 
 
 def learner_session(con, code: str, token: str) -> dict:
@@ -183,10 +194,14 @@ def export_table(table: str):
 # Observer
 # --------------------------------------------------------------------------
 
-@app.get("/api/observer/sessions", dependencies=[Depends(require_researcher)])
+@app.get("/api/observer/sessions", dependencies=[Depends(require_observer)])
 def observer_sessions() -> list[dict]:
+    """Only what an observer needs to pick a learner: no answers, scores or
+    model decisions."""
     with db.connect() as con:
-        return _session_summaries(con, "WHERE status IN ('ready', 'active')")
+        return db.rows(
+            con, "SELECT id, participant_code, status, current_index FROM sessions "
+                 "WHERE status IN ('ready', 'active') ORDER BY id")
 
 
 class Observation(BaseModel):
@@ -196,7 +211,7 @@ class Observation(BaseModel):
     client_ms: int | None = None
 
 
-@app.post("/api/observer/observations", dependencies=[Depends(require_researcher)])
+@app.post("/api/observer/observations", dependencies=[Depends(require_observer)])
 def record_observation(body: Observation) -> dict:
     if body.code not in OBSERVER_CODES:
         raise HTTPException(400, f"Unknown code {body.code!r}.")

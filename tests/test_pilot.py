@@ -162,3 +162,18 @@ def test_shadow_mode_never_reaches_the_learner(client):
     # ...while the server did record a decision for every answer.
     sid = client.get("/api/researcher/sessions", headers=KEY).json()[0]["id"]
     assert len(client.get(f"/api/researcher/sessions/{sid}", headers=KEY).json()["decisions"]) == len(FORM)
+
+
+def test_observer_key_records_observations_but_sees_no_data(client):
+    observer = {"X-Researcher-Key": "sensai-observe"}
+    s = client.post("/api/researcher/sessions", headers=KEY,
+                    json={"guardian_consent": True, "learner_assent": True, "recorded_by": "AN"}).json()
+    listing = client.get("/api/observer/sessions", headers=observer)
+    assert listing.status_code == 200
+    assert set(listing.json()[0]) == {"id", "participant_code", "status", "current_index"}
+    assert client.post("/api/observer/observations", headers=observer,
+                       json={"session_id": s["id"], "observer": "teacher", "code": "on_task"}).status_code == 200
+    for path in ("/api/researcher/sessions", f"/api/researcher/sessions/{s['id']}", "/api/researcher/export/answers.csv"):
+        assert client.get(path, headers=observer).status_code == 401
+    assert client.post("/api/researcher/sessions", headers=observer,
+                       json={"guardian_consent": True, "learner_assent": True, "recorded_by": "x"}).status_code == 401

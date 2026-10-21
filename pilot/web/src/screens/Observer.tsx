@@ -9,7 +9,7 @@ type Session = { id: number; participant_code: string; status: string; current_i
 const INTERVAL_S = 20;
 
 export default function Observer() {
-  const [key, setKey] = useState(() => load("sensai.key") ?? "");
+  const [key, setKey] = useState(() => load("sensai.observerKey") ?? "");
   const [name, setName] = useState(() => load("sensai.observer") ?? "");
   const [ready, setReady] = useState(false);
   const [sessions, setSessions] = useState<Session[]>([]);
@@ -78,7 +78,7 @@ export default function Observer() {
           className="card"
           onSubmit={(e) => {
             e.preventDefault();
-            save("sensai.key", key);
+            save("sensai.observerKey", key);
             save("sensai.observer", name);
             setReady(true);
           }}
@@ -93,7 +93,7 @@ export default function Observer() {
             </select>
           </label>
           <label>
-            Researcher key
+            Observer key
             <input type="password" value={key} onChange={(e) => setKey(e.target.value)} required />
           </label>
           <button className="big" disabled={!key || !name}>Continue</button>
