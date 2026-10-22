@@ -23,8 +23,9 @@ from sklearn.preprocessing import StandardScaler
 
 from analysis.dataset import CLASSES, blocks, load_tables, per_question, window_features
 from analysis.stage1 import DEPLOYED_FEATURES
-from pilot.labeler import RECENT_WINDOW, AnswerTelemetry, build_observation
-from pilot.policy import shadow_decision
+from pilot.core.states import BehaviouralState
+from pilot.core.telemetry import AnswerRecord, LearnerHistory, ObservationBuilder
+from pilot.policy import DQNPolicy, Shield
 
 ROOT = Path(__file__).parent.parent
 CLASS_TO_STATE = {"under_challenged": "rushing", "on_task": "on_task", "needs_support": "struggling"}
@@ -39,6 +40,7 @@ def run() -> pd.DataFrame:
     train = blocks(t)
     y = train.label.map({c: i for i, c in enumerate(CLASSES)}).to_numpy()
     rows = []
+    shield, observations = Shield(DQNPolicy("v2")), ObservationBuilder()
     for learner, lq in q.sort_values("question_index").groupby("learner"):
         mask = (train.learner != learner).to_numpy()
         model = make_pipeline(StandardScaler(), LogisticRegression(class_weight="balanced", max_iter=1000))
@@ -50,19 +52,21 @@ def run() -> pd.DataFrame:
             p = np.zeros(len(CLASSES))
             p[model.classes_] = model.predict_proba(np.array([[feats[f] for f in DEPLOYED_FEATURES]]))[0]
             cls = CLASSES[int(p.argmax())]
-            state = CLASS_TO_STATE[cls]
-            recent = lq.iloc[max(0, i - RECENT_WINDOW + 1): i + 1]
-            tel = AnswerTelemetry(
-                response_time_s=a.rt, first_input_s=None if pd.isna(a.first_input) else a.first_input,
-                correct=bool(a.correct), hints_used=int(a.hints_used), difficulty=int(a.difficulty),
-                recent_errors=[not c for c in recent.correct.astype(bool)],
-                questions_at_level=int((lq.iloc[: i + 1].difficulty == a.difficulty).sum()))
-            d = shadow_decision(build_observation(state, tel), state, int(a.difficulty))
+            state = BehaviouralState(CLASS_TO_STATE[cls])
+            history = LearnerHistory(tuple(
+                AnswerRecord(question_index=int(r.question_index), difficulty=int(r.difficulty),
+                             correct=bool(r.correct), response_time_s=float(r.rt),
+                             first_input_s=None if pd.isna(r.first_input) else float(r.first_input),
+                             hints_used=int(r.hints_used))
+                for r in lq.iloc[: i + 1].itertuples()))
+            decision = shield.decide(observations.build(state, history), state, int(a.difficulty))
+            d = {"raw_action_name": decision.raw_action, "action_name": decision.action,
+                 "guardrail": decision.guardrail}
             rows.append({"learner": learner, "question": int(a.question_index) + 1, "kind": a.kind,
                          "level": int(a.difficulty), "correct": bool(a.correct), "rt_s": round(a.rt, 1),
                          "first_input_s": None if pd.isna(a.first_input) else round(a.first_input, 1),
                          "hints": int(a.hints_used), "pauses": int(a.pauses),
-                         "stage1_class": cls, "state": state, "p_needs_support": round(float(p[2]), 2),
+                         "stage1_class": cls, "state": state.value, "p_needs_support": round(float(p[2]), 2),
                          "dqn_action": d["raw_action_name"], "final_action": d["action_name"],
                          "guardrail": d["guardrail"]})
     return pd.DataFrame(rows)

@@ -2,6 +2,8 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { api, ApiError, load, save, serverNow, syncClock } from "../api";
 import { CHECKIN_CHOICES } from "../states";
 
+type Support = { message: string; hint: string | null };
+
 type Question = {
   index: number;
   kind: string;
@@ -26,6 +28,7 @@ export default function Learner() {
   const [question, setQuestion] = useState<Question | null>(null);
   const [answer, setAnswer] = useState("");
   const [hint, setHint] = useState<string | null>(null);
+  const [support, setSupport] = useState<Support | null>(null);
   const [feedback, setFeedback] = useState<{ correct: boolean; correctAnswer: string; checkinDue: boolean; finished: boolean } | null>(null);
   const [codeInput, setCodeInput] = useState("");
   const [error, setError] = useState<string | null>(null);
@@ -52,7 +55,7 @@ export default function Learner() {
   );
 
   const loadQuestion = useCallback(async (a: Auth) => {
-    const res = await api<{ done: boolean; question?: Question }>("/api/learner/question", a);
+    const res = await api<{ done: boolean; question?: Question; support?: Support }>("/api/learner/question", a);
     if (res.done || !res.question) {
       setPhase("done");
       await api("/api/learner/finish", a).catch(() => {});
@@ -61,7 +64,9 @@ export default function Learner() {
     }
     setQuestion(res.question);
     setAnswer("");
-    setHint(null);
+    // Adaptive mode: SensAI's response to how the last questions went.
+    setSupport(res.support ?? null);
+    setHint(res.support?.hint ?? null);
     setFeedback(null);
     setPhase("question");
   }, []);
@@ -266,6 +271,7 @@ export default function Learner() {
 
       {phase === "question" && question && (
         <form className="card question" onSubmit={submit}>
+          {support && <p className="support">{support.message}</p>}
           <p className="instruction">{question.instruction}</p>
           <p className={question.kind === "word_problem" ? "prompt story" : "prompt"}>{question.prompt}</p>
           {question.choices.length > 0 ? (

@@ -97,6 +97,7 @@ input:focus, select:focus { outline: none; border-color: var(--brand); }
 .choice.on { border-color: var(--brand); background: #eaf1fd; }
 @media (max-width: 480px) { .choices { grid-template-columns: repeat(2, 1fr); } }
 .question .row { width: 100%; max-width: 420px; }
+.support { background: #eaf1fd; border: 2px solid #c9dbf8; color: var(--ink); border-radius: 14px; padding: 0.7rem 1rem; font-size: 1.1rem; font-weight: 700; margin: 0; text-align: center; }
 .hint { background: #fff7e8; border: 2px solid #f6d9a8; border-radius: 14px; padding: 0.8rem 1rem; font-size: 1.1rem; margin: 0; }
 .feedback.yes h2 { color: var(--ok); font-size: 2rem; }
 .feedback.no h2 { color: var(--ink); font-size: 2rem; }

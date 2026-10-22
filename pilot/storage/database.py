@@ -1,20 +1,10 @@
-"""SQLite storage for the pilot. One file, no server to run.
-
-Nothing here holds a name or any other identifier: learners are known only
-by a participant code (P01, P02, ...). The mapping from codes to children is
-kept on paper by the researcher, outside this system.
-"""
-
 from __future__ import annotations
 
-import json
-import os
 import sqlite3
 import time
 from contextlib import contextmanager
 from pathlib import Path
-
-DB_PATH = Path(os.environ.get("PILOT_DB", Path(__file__).parent / "data" / "pilot.sqlite3"))
+from typing import Iterator
 
 SCHEMA = """
 CREATE TABLE IF NOT EXISTS sessions (
@@ -26,7 +16,7 @@ CREATE TABLE IF NOT EXISTS sessions (
     notes TEXT,
     status TEXT NOT NULL DEFAULT 'ready',      -- ready | active | finished | closed
     learner_token TEXT,
-    current_index INTEGER NOT NULL DEFAULT 0,
+    current_index INTEGER NOT NULL DEFAULT 0,  -- position in the session (0-14)
     created_ms INTEGER NOT NULL,
     started_ms INTEGER,
     finished_ms INTEGER
@@ -36,7 +26,7 @@ CREATE TABLE IF NOT EXISTS events (
     session_id INTEGER NOT NULL REFERENCES sessions(id),
     type TEXT NOT NULL,
     question_index INTEGER,
-    client_ms INTEGER,                         -- learner device clock, corrected to server time
+    client_ms INTEGER,
     server_ms INTEGER NOT NULL,
     payload TEXT NOT NULL DEFAULT '{}'
 );
@@ -69,7 +59,7 @@ CREATE TABLE IF NOT EXISTS observations (
     session_id INTEGER NOT NULL REFERENCES sessions(id),
     observer TEXT NOT NULL,
     code TEXT NOT NULL,
-    client_ms INTEGER,                         -- observer device clock, corrected to server time
+    client_ms INTEGER,
     server_ms INTEGER NOT NULL
 );
 CREATE TABLE IF NOT EXISTS decisions (
@@ -80,15 +70,24 @@ CREATE TABLE IF NOT EXISTS decisions (
     state_source TEXT NOT NULL,
     observation TEXT NOT NULL,
     model TEXT NOT NULL,
-    raw_action_index INTEGER NOT NULL,         -- the DQN's own first choice
+    raw_action_index INTEGER NOT NULL,
     raw_action_name TEXT NOT NULL,
-    action_index INTEGER NOT NULL,             -- after guardrails
+    action_index INTEGER NOT NULL,
     action_name TEXT NOT NULL,
-    guardrail TEXT,                            -- why the DQN's choice was ruled out, if it was
+    guardrail TEXT,
     q_values TEXT NOT NULL,
     server_ms INTEGER NOT NULL
 );
 """
+
+# Columns added after the pilot. Added in place so the pilot database (21 October
+# 2026) keeps working unchanged: old rows get the defaults shown.
+MIGRATIONS = (
+    ("sessions", "mode", "TEXT NOT NULL DEFAULT 'shadow'"),          # shadow | adaptive
+    ("sessions", "current_question_id", "TEXT"),
+    ("sessions", "pending_support", "TEXT"),                         # JSON shown with the next question
+    ("answers", "question_id", "TEXT"),
+)
 
 TABLES = ("sessions", "events", "answers", "checkins", "observations", "decisions")
 
@@ -97,37 +96,26 @@ def now_ms() -> int:
     return int(time.time() * 1000)
 
 
-def init() -> None:
-    DB_PATH.parent.mkdir(parents=True, exist_ok=True)
-    with connect() as con:
-        con.executescript(SCHEMA)
+class Database:
+    def __init__(self, path: Path) -> None:
+        self.path = Path(path)
 
+    def initialise(self) -> None:
+        self.path.parent.mkdir(parents=True, exist_ok=True)
+        with self.connect() as con:
+            con.executescript(SCHEMA)
+            for table, column, spec in MIGRATIONS:
+                existing = {r[1] for r in con.execute(f"PRAGMA table_info({table})")}
+                if column not in existing:
+                    con.execute(f"ALTER TABLE {table} ADD COLUMN {column} {spec}")
 
-@contextmanager
-def connect():
-    con = sqlite3.connect(DB_PATH, timeout=10)
-    con.row_factory = sqlite3.Row
-    con.execute("PRAGMA foreign_keys = ON")
-    try:
-        yield con
-        con.commit()
-    finally:
-        con.close()
-
-
-def rows(con, sql: str, *args) -> list[dict]:
-    return [dict(r) for r in con.execute(sql, args).fetchall()]
-
-
-def one(con, sql: str, *args) -> dict | None:
-    r = con.execute(sql, args).fetchone()
-    return dict(r) if r else None
-
-
-def log_event(con, session_id: int, type_: str, question_index: int | None,
-              client_ms: int | None, payload: dict | None = None) -> None:
-    con.execute(
-        "INSERT INTO events (session_id, type, question_index, client_ms, server_ms, payload) "
-        "VALUES (?, ?, ?, ?, ?, ?)",
-        (session_id, type_, question_index, client_ms, now_ms(), json.dumps(payload or {})),
-    )
+    @contextmanager
+    def connect(self) -> Iterator[sqlite3.Connection]:
+        con = sqlite3.connect(self.path, timeout=10)
+        con.row_factory = sqlite3.Row
+        con.execute("PRAGMA foreign_keys = ON")
+        try:
+            yield con
+            con.commit()
+        finally:
+            con.close()

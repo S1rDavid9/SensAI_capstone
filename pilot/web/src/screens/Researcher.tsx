@@ -6,6 +6,7 @@ type Session = {
   id: number;
   participant_code: string;
   status: string;
+  mode: string;
   current_index: number;
   answered: number;
   correct: number;
@@ -33,7 +34,7 @@ export default function Researcher() {
   const [openId, setOpenId] = useState<number | null>(null);
   const [detail, setDetail] = useState<Detail | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const [form, setForm] = useState({ guardian_consent: false, learner_assent: false, recorded_by: "", notes: "" });
+  const [form, setForm] = useState({ guardian_consent: false, learner_assent: false, recorded_by: "", notes: "", mode: "shadow" });
   const [created, setCreated] = useState<string | null>(null);
 
   const refresh = useCallback(async () => {
@@ -78,7 +79,7 @@ export default function Researcher() {
     try {
       const s = await api<{ participant_code: string }>("/api/researcher/sessions", form, researcherHeaders(key));
       setCreated(s.participant_code);
-      setForm({ guardian_consent: false, learner_assent: false, recorded_by: form.recorded_by, notes: "" });
+      setForm({ guardian_consent: false, learner_assent: false, recorded_by: form.recorded_by, notes: "", mode: form.mode });
       refresh();
     } catch (err) {
       setError(err instanceof ApiError ? err.message : "Couldn't create the session.");
@@ -153,6 +154,13 @@ export default function Researcher() {
               <input value={form.recorded_by} onChange={(e) => setForm({ ...form, recorded_by: e.target.value })} placeholder="Your initials" required />
             </label>
             <label>
+              Mode
+              <select value={form.mode} onChange={(e) => setForm({ ...form, mode: e.target.value })}>
+                <option value="shadow">Pilot: fixed questions, model in shadow mode</option>
+                <option value="adaptive">Adaptive: SensAI adapts the questions</option>
+              </select>
+            </label>
+            <label>
               Notes (no names)
               <input value={form.notes} onChange={(e) => setForm({ ...form, notes: e.target.value })} placeholder="e.g. Session 1, laptop 3" />
             </label>
@@ -165,12 +173,13 @@ export default function Researcher() {
           <h2>Sessions</h2>
           <table>
             <thead>
-              <tr><th>Code</th><th>Status</th><th>Progress</th><th>Correct</th><th>Obs.</th><th>Latest shadow decision</th><th></th></tr>
+              <tr><th>Code</th><th>Mode</th><th>Status</th><th>Progress</th><th>Correct</th><th>Obs.</th><th>Latest shadow decision</th><th></th></tr>
             </thead>
             <tbody>
               {sessions.map((s) => (
                 <tr key={s.id} className={openId === s.id ? "open" : ""} onClick={() => setOpenId(s.id)}>
                   <td><b>{s.participant_code}</b></td>
+                  <td>{s.mode === "adaptive" ? "Adaptive" : "Pilot"}</td>
                   <td><span className={`status ${s.status}`}>{s.status}</span></td>
                   <td>{s.answered}/15</td>
                   <td>{s.correct}</td>
@@ -187,7 +196,7 @@ export default function Researcher() {
                   </td>
                 </tr>
               ))}
-              {sessions.length === 0 && <tr><td colSpan={7} className="muted">No sessions yet.</td></tr>}
+              {sessions.length === 0 && <tr><td colSpan={8} className="muted">No sessions yet.</td></tr>}
             </tbody>
           </table>
         </section>
