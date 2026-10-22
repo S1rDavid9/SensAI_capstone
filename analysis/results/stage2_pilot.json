@@ -1,0 +1,63 @@
+{
+  "answers": 463,
+  "learners": 31,
+  "predicted_states": {
+    "rushing": 247,
+    "on_task": 141,
+    "struggling": 75
+  },
+  "provisional_rule_states_logged_during_pilot": {
+    "stuck": 239,
+    "on_task": 210,
+    "struggling": 14
+  },
+  "dqn_action_by_state (share)": {
+    "on_task": {
+      "decrease_difficulty": 0.695,
+      "advance_topic": 0.277,
+      "offer_hint": 0.028
+    },
+    "rushing": {
+      "advance_topic": 0.757,
+      "introduce_challenge": 0.202,
+      "offer_hint": 0.024,
+      "repeat_simplified": 0.008,
+      "add_encouragement": 0.008
+    },
+    "struggling": {
+      "repeat_simplified": 0.52,
+      "decrease_difficulty": 0.293,
+      "add_encouragement": 0.187
+    }
+  },
+  "final_action_by_state (share, after guardrails)": {
+    "on_task": {
+      "offer_hint": 0.475,
+      "advance_topic": 0.277,
+      "repeat_simplified": 0.248
+    },
+    "rushing": {
+      "advance_topic": 0.757,
+      "introduce_challenge": 0.202,
+      "offer_hint": 0.024,
+      "repeat_simplified": 0.008,
+      "add_encouragement": 0.008
+    },
+    "struggling": {
+      "repeat_simplified": 0.547,
+      "decrease_difficulty": 0.253,
+      "add_encouragement": 0.2
+    }
+  },
+  "guardrail_rate": 0.218,
+  "guardrail_reasons": [
+    [
+      "don't make it easier for a learner who is coping",
+      94
+    ],
+    [
+      "already at the easiest level",
+      7
+    ]
+  ]
+}
