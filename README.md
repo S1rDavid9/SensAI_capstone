@@ -53,7 +53,7 @@ Full analysis: `analysis/results/stage1.json`, `analysis/results/stage2_pilot.js
 | Machine learning | PyTorch 2.13, Stable-Baselines3 2.9, Gymnasium 1.3, scikit-learn 1.9, XGBoost 3.2, NumPy 2.4, pandas 3.0 |
 | Frontend | React 19, React Router 7, TypeScript 5.9, Vite 7 |
 | Testing | pytest 9, Playwright 1.64 (Chrome, WebKit, Firefox) |
-| Learner devices | Any modern browser. Used in the pilot on Chromebooks, iPhones, Android, iPads, Mac and Windows laptops (Chrome); tested automatically in Chrome, WebKit and Firefox. |
+| Learner devices | Any modern browser. Used in the pilot on Chromebooks, iPhones, Android, iPads, Mac and Windows laptops (Chrome and Safari); tested automatically in Chrome, WebKit and Firefox. |
 
 XGBoost on macOS also needs OpenMP: `brew install libomp`.
 
@@ -99,7 +99,7 @@ uv run python -m tests.compatibility.browser_matrix    # full sessions in Chrome
 | Unit and integration (pytest) | 77 tests, 96% of `pilot/` covered; includes a test that shadow-mode decisions never reach the learner | |
 | Stress (`docs/testing/load_test_results.md`) | 0 failed requests out of 32,000 at 10-100 simultaneous learners, both modes; at 30 learners with no thinking time, 95% of requests under 0.45 s | Fixed "database is locked" when several workers start; loaded the Stage 1 model at startup (removed a 2 s delay); SQLite WAL mode |
 | Compatibility (`docs/testing/compatibility_results.md`) | 7/7 browser and device targets pass full sessions; no JavaScript errors, no horizontal overflow | Raised learner buttons from 43 px to at least 48 px |
-| Field test (the pilot) | 31 learners in batches of about 12, in Chrome on school Chromebooks, iPhones, an Android phone, iPads, and Mac and Windows laptops | Device and browser are now recorded with each session |
+| Field test (the pilot) | 31 learners in batches of about 12, on school Chromebooks, iPhones (Safari and Chrome), an Android phone, iPads, and Mac and Windows laptops | Device and browser are now recorded with each session |
 
 ## Repository structure
 
