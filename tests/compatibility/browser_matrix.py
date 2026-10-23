@@ -156,13 +156,11 @@ def to_markdown(results: list[dict]) -> str:
 
 
 def shrink_screenshots() -> None:
-    """Screenshots are taken at device resolution (up to 3x); store them as
-    900 px JPEGs so the repository stays small."""
+    """Screenshots are taken at device resolution (up to 3x); resize them to
+    900 px in place so the repository stays small."""
     import subprocess
-    for png in SHOTS.glob("*.png"):
-        subprocess.run(["sips", "-Z", "900", "-s", "format", "jpeg", "-s", "formatOptions", "80", str(png),
-                        "--out", str(png.with_suffix(".jpg"))], check=True, capture_output=True)
-        png.unlink()
+    for jpg in SHOTS.glob("*.jpg"):
+        subprocess.run(["sips", "-Z", "900", "-s", "formatOptions", "80", str(jpg)], check=True, capture_output=True)
 
 
 def main() -> None:
