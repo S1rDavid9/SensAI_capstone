@@ -289,7 +289,7 @@ def test_full_shadow_session(client):
     form = QuestionBank().pilot_form()
     seen = run_session(client, auth, lambda q, i: form[i].answer if i % 3 else "0")
     assert [x["question"]["id"] for x in seen] == list(PILOT_FORM_IDS)
-    assert client.post("/api/learner/question", json=auth).json() == {"done": True}
+    assert client.post("/api/learner/question", json=auth).json() == {"done": True}   # no summary in the pilot
     assert client.post("/api/learner/finish", json=auth).json() == {"ok": True}
 
     d = client.get(f"/api/researcher/sessions/{s['id']}", headers=KEY).json()
@@ -356,6 +356,9 @@ def test_adaptive_session_adapts_and_explains(client):
     seen = run_session(client, s["auth"], lambda q, i: bank.get(q["id"]).answer)
     ids = [x["question"]["id"] for x in seen]
     assert len(ids) == len(set(ids)) == SESSION_LENGTH                # never repeats a question
+    done = client.post("/api/learner/question", json=s["auth"]).json()
+    assert done["done"] and done["summary"]["correct"] == done["summary"]["total"] == SESSION_LENGTH
+    assert done["summary"]["highest_level"] > 1
     assert all("support" in x and x["support"]["message"] for x in seen[1:])
     assert max(bank.get(i).difficulty for i in ids) > 1                # difficulty rose
     d = client.get(f"/api/researcher/sessions/{s['id']}", headers=KEY).json()

@@ -34,7 +34,7 @@ export default function Researcher() {
   const [openId, setOpenId] = useState<number | null>(null);
   const [detail, setDetail] = useState<Detail | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const [form, setForm] = useState({ guardian_consent: false, learner_assent: false, recorded_by: "", notes: "", mode: "shadow" });
+  const [form, setForm] = useState({ guardian_consent: false, learner_assent: false, recorded_by: "", notes: "", mode: "adaptive" });
   const [created, setCreated] = useState<string | null>(null);
 
   const refresh = useCallback(async () => {
@@ -156,8 +156,8 @@ export default function Researcher() {
             <label>
               Mode
               <select value={form.mode} onChange={(e) => setForm({ ...form, mode: e.target.value })}>
-                <option value="shadow">Pilot: fixed questions, model in shadow mode</option>
-                <option value="adaptive">Adaptive: SensAI adapts the questions</option>
+                <option value="adaptive">Adaptive: SensAI adapts the questions (final product)</option>
+                <option value="shadow">Pilot: fixed 15 questions, model in shadow mode (research)</option>
               </select>
             </label>
             <label>

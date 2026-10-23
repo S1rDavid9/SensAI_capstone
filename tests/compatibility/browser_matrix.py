@@ -120,7 +120,7 @@ def run_target(p, url: str, t: Target) -> dict:
             if i in (4, 9, 14):
                 page.wait_for_selector(".faces")
                 page.click(".face >> nth=1")
-        page.wait_for_selector("text=All done!", timeout=10000)
+        page.wait_for_selector(".done-card", timeout=10000)
         page.wait_for_timeout(500)
         page.screenshot(path=SHOTS / f"{slug}-done.jpg")
         result.update(layout or {})

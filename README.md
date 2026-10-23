@@ -6,7 +6,7 @@ After every answer it runs a two-stage loop:
 
 1. **Stage 1 (state classifier):** reads the learner's recent telemetry (errors and response time over the last five answers) and estimates a behavioural state: *on task*, *rushing* (under-challenged) or *struggling* (needs support).
 2. **Stage 2 (scaffolding policy):** a Deep Q-Network trained in simulation picks one of eight actions (easier, harder, different type, hint, encouragement, challenge, simplified repeat, move on). Guardrails rule out actions no teacher would choose.
-3. **Adaptation:** the app applies the action. It picks the next question and shows the learner a short message from Sena the owl, or a hint straight away.
+3. **Adaptation:** the app applies the action. It picks the next question and shows the learner a short message from Sensei Ryu, a friendly dragon, or a hint straight away.
 
 States describe what a learner is **observably doing**, not how they feel. SensAI does not claim to detect emotions.
 
@@ -15,7 +15,7 @@ States describe what a learner is **observably doing**, not how they feel. SensA
 - **Repository:** https://github.com/S1rDavid9/SensAI_capstone
 
 <p align="center">
-  <img src="docs/testing/compatibility/safari-engine-iphone-13-question.jpg" width="260" alt="Learner screen on an iPhone: Sena the owl gives encouragement above a subtraction question">
+  <img src="docs/testing/compatibility/safari-engine-iphone-13-question.jpg" width="260" alt="Learner screen on an iPhone: Sensei Ryu gives encouragement above a question">
   &nbsp;
   <img src="docs/testing/compatibility/chrome-1366x768-welcome.jpg" width="440" alt="Welcome screen on a Chromebook">
 </p>
@@ -83,7 +83,7 @@ PILOT_RESEARCHER_KEY=choose-a-key PILOT_OBSERVER_KEY=teacher-key uv run uvicorn 
 
 Other devices on the same Wi-Fi use the laptop's address instead of `localhost` (`ipconfig getifaddr en0` on a Mac). Without the environment variables the keys are `sensai-dev` and `sensai-observe`, for local testing only. Set `PILOT_DB=pilot/data/demo.sqlite3` to practise without touching real data.
 
-To try the closed loop: create a session in **Adaptive** mode, then answer quickly and correctly (SensAI moves on and adds challenges) or keep getting answers wrong (it eases off, simplifies and encourages). The researcher screen shows every decision, including where a guardrail changed the DQN's choice.
+To try the closed loop: create a session in **Adaptive** mode, then answer quickly and correctly (SensAI moves on and adds challenges) or keep getting answers wrong (it eases off, simplifies and encourages). At the end the learner sees how many they got right and the hardest level reached. The researcher screen shows every decision, including where a guardrail changed the DQN's choice.
 
 ## Testing
 

@@ -116,12 +116,12 @@ body:has(.learner) {
 .speaker { display: flex; align-items: center; gap: 0.75rem; justify-content: center; }
 .speaker.small { align-self: stretch; justify-content: flex-start; }
 .bubble {
-  position: relative; margin: 0; background: #f1ecff; color: #2b2350; font-weight: 800;
+  position: relative; margin: 0; background: #e6f7f4; color: #2b2350; font-weight: 800;
   padding: 0.8rem 1.1rem; border-radius: 18px; font-size: 1.15rem; text-align: left;
 }
 .bubble::before {
   content: ""; position: absolute; left: -10px; top: 50%; transform: translateY(-50%);
-  border: 10px solid transparent; border-right-color: #f1ecff; border-left: 0;
+  border: 10px solid transparent; border-right-color: #e6f7f4; border-left: 0;
 }
 
 .star-path { list-style: none; display: flex; flex-wrap: wrap; justify-content: center; gap: 6px; padding: 0; margin: 0; }
@@ -162,7 +162,11 @@ body:has(.learner) {
 .face:hover { border-color: #7c5cd6; }
 
 .done-card { position: relative; overflow: hidden; }
-.done-card h1 { font-size: 2.4rem; margin: 0; color: #6544c4; }
+.done-card h1 { font-size: 2.4rem; margin: 0; color: #1f8f82; }
+.summary { display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; }
+.summary div { background: #effaf8; border-radius: 18px; padding: 0.8rem 1.4rem; display: flex; flex-direction: column; align-items: center; min-width: 9rem; }
+.summary b { font-size: 1.8rem; color: #1f8f82; }
+.summary span { color: #3b3460; font-weight: 700; font-size: 0.95rem; }
 .confetti { position: absolute; inset: 0; pointer-events: none; }
 .confetti i {
   position: absolute; top: -10px; left: calc(var(--i) * 5.5%); width: 8px; height: 14px; border-radius: 2px;

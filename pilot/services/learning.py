@@ -50,6 +50,13 @@ class LearningService:
             return self.bank.get(s["current_question_id"])
         return self.bank.pilot_form()[s["current_index"]]   # sessions created before adaptive mode existed
 
+    @staticmethod
+    def _summary(repos: Repositories, session_id: int) -> dict:
+        """End-of-session summary shown to the learner in adaptive mode."""
+        answers = repos.answers.for_session(session_id)
+        return {"correct": sum(a["correct"] for a in answers), "total": len(answers),
+                "highest_level": max((a["difficulty"] for a in answers), default=1)}
+
     # -- use cases ---------------------------------------------------------
 
     def join(self, code: str) -> dict:
@@ -65,13 +72,16 @@ class LearningService:
             repos.sessions.activate(s["id"], token, self.modes[s["mode"]].first_question().id)
             if resumed:
                 repos.events.log(s["id"], "session_resumed", s["current_index"], None)
-            return {"participant_code": s["participant_code"], "token": token,
+            return {"participant_code": s["participant_code"], "token": token, "mode": s["mode"],
                     "current_index": s["current_index"], "n_questions": SESSION_LENGTH, "resumed": resumed}
 
     def current(self, code: str, token: str) -> dict:
         with self.db.connect() as con:
-            s = self._open_session(Repositories(con), code, token)
+            repos = Repositories(con)
+            s = self._open_session(repos, code, token)
             if s["current_index"] >= SESSION_LENGTH:
+                if s["mode"] == "adaptive":
+                    return {"done": True, "summary": self._summary(repos, s["id"])}
                 return {"done": True}
             out = {"done": False, "question": self._current_question(s).public(s["current_index"])}
             if s["pending_support"]:

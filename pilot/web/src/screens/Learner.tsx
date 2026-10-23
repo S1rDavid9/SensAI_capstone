@@ -16,7 +16,8 @@ type Question = {
   choices: string[];
 };
 
-type Auth = { code: string; token: string };
+type Auth = { code: string; token: string; mode?: string };
+type Summary = { correct: number; total: number; highest_level: number };
 type Phase = "join" | "welcome" | "question" | "feedback" | "checkin" | "done";
 
 const STORAGE_KEY = "sensai.learner";
@@ -31,6 +32,7 @@ export default function Learner() {
   const [answer, setAnswer] = useState("");
   const [hint, setHint] = useState<string | null>(null);
   const [support, setSupport] = useState<Support | null>(null);
+  const [summary, setSummary] = useState<Summary | null>(null);
   const [feedback, setFeedback] = useState<{ correct: boolean; correctAnswer: string; checkinDue: boolean; finished: boolean } | null>(null);
   const [codeInput, setCodeInput] = useState("");
   const [error, setError] = useState<string | null>(null);
@@ -46,6 +48,8 @@ export default function Learner() {
   const idleCount = useRef(0);
   const inputRef = useRef<HTMLInputElement>(null);
 
+  const adaptive = auth?.mode === "adaptive";
+
   const logEvent = useCallback(
     (type: string, questionIndex: number | null, payload: Record<string, unknown> = {}) => {
       if (!auth) return;
@@ -57,8 +61,9 @@ export default function Learner() {
   );
 
   const loadQuestion = useCallback(async (a: Auth) => {
-    const res = await api<{ done: boolean; question?: Question; support?: Support }>("/api/learner/question", a);
+    const res = await api<{ done: boolean; question?: Question; support?: Support; summary?: Summary }>("/api/learner/question", a);
     if (res.done || !res.question) {
+      setSummary(res.summary ?? null);
       setPhase("done");
       await api("/api/learner/finish", a).catch(() => {});
       save(STORAGE_KEY, null);
@@ -131,11 +136,11 @@ export default function Learner() {
     setError(null);
     setBusy(true);
     try {
-      const res = await api<{ participant_code: string; token: string; n_questions: number; resumed: boolean }>(
+      const res = await api<{ participant_code: string; token: string; mode: string; n_questions: number; resumed: boolean }>(
         "/api/learner/join",
         { code: codeInput },
       );
-      const a = { code: res.participant_code, token: res.token };
+      const a = { code: res.participant_code, token: res.token, mode: res.mode };
       save(STORAGE_KEY, JSON.stringify(a));
       setAuth(a);
       setNQuestions(res.n_questions);
@@ -257,7 +262,7 @@ export default function Learner() {
         <form className="card center pop" onSubmit={join}>
           <Mascot mood="hello" size={120} />
           <h1 className="brand">Sens<span>AI</span></h1>
-          <p className="lead">Hi! Type the code the researcher gave you.</p>
+          <p className="lead">Hi! Type your code to start.</p>
           <input
             className="code-input"
             value={codeInput}
@@ -276,10 +281,12 @@ export default function Learner() {
         <div className="card center pop">
           <div className="speaker">
             <Mascot mood="hello" size={110} />
-            <p className="bubble">I'm Sena! Let's do some puzzles together.</p>
+            <p className="bubble">I'm Sensei Ryu! Let's do some puzzles together.</p>
           </div>
           <p className="lead">
-            You'll see {nQuestions} puzzles: sums, number patterns, shapes and letters. They start easy and get harder.
+            {adaptive
+              ? <>You'll do {nQuestions} puzzles: sums, number patterns, shapes and letters. I'll pick each one to suit how you're doing.</>
+              : <>You'll see {nQuestions} puzzles: sums, number patterns, shapes and letters. They start easy and get harder.</>}
           </p>
           <ul className="rules">
             <li><span aria-hidden>🌱</span> Take your time. This is not a test and there's no score.</li>
@@ -379,8 +386,24 @@ export default function Learner() {
             {Array.from({ length: 18 }, (_, i) => <i key={i} style={{ ["--i" as string]: i }} />)}
           </div>
           <Mascot mood="cheering" size={140} />
-          <h1>All done!</h1>
-          <p className="lead">Thank you for helping me learn. You can tell the researcher you've finished.</p>
+          {adaptive || summary ? (
+            <>
+              <h1>Great job!</h1>
+              <p className="lead">You finished all {summary?.total ?? nQuestions} puzzles.</p>
+              {summary && (
+                <div className="summary">
+                  <div><b>{summary.correct}</b><span>right answers</span></div>
+                  <div><b>{"★".repeat(summary.highest_level)}</b><span>hardest level reached</span></div>
+                </div>
+              )}
+              <p className="muted">Sensei Ryu will see you next time!</p>
+            </>
+          ) : (
+            <>
+              <h1>All done!</h1>
+              <p className="lead">Thank you for helping. You can tell the researcher you've finished.</p>
+            </>
+          )}
         </div>
       )}
     </main>

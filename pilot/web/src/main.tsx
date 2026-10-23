@@ -9,7 +9,7 @@ import Researcher from "./screens/Researcher";
 function Home() {
   return (
     <main className="home">
-      <h1 className="brand">Sens<span>AI</span> pilot</h1>
+      <h1 className="brand">Sens<span>AI</span></h1>
       <p className="muted">Choose who is using this device.</p>
       <div className="home-grid">
         <Link className="home-card" to="/learn">
