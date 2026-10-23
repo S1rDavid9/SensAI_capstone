@@ -127,7 +127,7 @@ api/, main.py           Earlier milestone: JSON API demo and command-line entry 
 
 ## Ethics and data
 
-The pilot was approved by the ALU Research Ethics Committee. Every learner had signed guardian consent and gave their own assent. No names are entered into the system: learners are known only by a participant code, and the link between codes and names was kept on paper and destroyed two weeks after the last session. The pilot database is git-ignored and stored only on the researcher's ALU Google Drive.
+The pilot was approved by the ALU Research Ethics Committee. Only learners with signed guardian consent who also gave their own assent are included in the data. No names are entered into the system: learners are known only by a participant code, and the paper list linking codes to names is kept separately and destroyed two weeks after the last session. The pilot database is git-ignored; it is kept on the researcher's laptop and private ALU Google Drive, accessible only to the researcher and supervisor.
 
 During the pilot the DQN ran in **shadow mode**: every learner saw the same 15 questions, and the model's decisions were stored but never shown to learners or used to change what they saw. Adaptive mode has been demonstrated by the researcher only; using it with children would need a new ethics approval.
 
