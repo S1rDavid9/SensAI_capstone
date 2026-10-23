@@ -370,3 +370,30 @@ def test_adaptive_session_eases_off_for_a_struggling_learner(client):
     assert max(levels) <= 2, levels
     actions = {x["action_name"] for x in client.get(f"/api/researcher/sessions/{s['id']}", headers=KEY).json()["decisions"]}
     assert not actions & {"advance_topic", "increase_difficulty", "introduce_challenge"}
+
+
+def test_device_info_is_recorded(client):
+    s = new_session(client)
+    payload = {"user_agent": "Mozilla/5.0 (X11; CrOS x86_64)", "screen": "1366x768", "touch": False}
+    assert client.post("/api/learner/event", json={**s["auth"], "type": "device_info", "payload": payload}).status_code == 200
+    events = client.get(f"/api/researcher/sessions/{s['id']}", headers=KEY).json()["events"]
+    assert any(e["type"] == "device_info" and "CrOS" in e["payload"] for e in events)
+
+
+def test_database_can_be_initialised_by_several_processes_at_once(tmp_path):
+    """Several uvicorn workers start together; none may fail."""
+    import multiprocessing as mp
+    ctx = mp.get_context("spawn")
+    path = tmp_path / "workers.sqlite3"
+    procs = [ctx.Process(target=_init_db, args=(str(path),)) for _ in range(6)]
+    for p in procs:
+        p.start()
+    for p in procs:
+        p.join(30)
+    assert all(p.exitcode == 0 for p in procs)
+    with sqlite3.connect(path) as con:
+        assert con.execute("PRAGMA journal_mode").fetchone()[0] == "wal"
+
+
+def _init_db(path: str) -> None:
+    Database(path).initialise()

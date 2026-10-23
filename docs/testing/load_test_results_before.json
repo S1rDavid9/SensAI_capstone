@@ -1,0 +1,515 @@
+{
+  "machine": {
+    "os": "Darwin 26.6.2",
+    "cpu": "arm",
+    "cores": 8,
+    "ram_gb": 8.0,
+    "python": "3.11.15"
+  },
+  "results": [
+    {
+      "learners": 10,
+      "mode": "shadow",
+      "requests": 500,
+      "failed_requests": 0,
+      "error_examples": [],
+      "wall_time_s": 0.99,
+      "throughput_req_per_s": 505.1,
+      "latency_ms": {
+        "answer": {
+          "median": 8.2,
+          "p95": 72.7,
+          "max": 252.0,
+          "n": 150
+        },
+        "checkin": {
+          "median": 6.4,
+          "p95": 37.8,
+          "max": 52.4,
+          "n": 30
+        },
+        "event": {
+          "median": 7.7,
+          "p95": 61.7,
+          "max": 204.9,
+          "n": 150
+        },
+        "finish": {
+          "median": 4.3,
+          "p95": 48.6,
+          "max": 48.6,
+          "n": 10
+        },
+        "join": {
+          "median": 21.5,
+          "p95": 154.1,
+          "max": 154.1,
+          "n": 10
+        },
+        "question": {
+          "median": 3.7,
+          "p95": 18.3,
+          "max": 71.7,
+          "n": 150
+        }
+      },
+      "latency_all_ms": {
+        "median": 6.2,
+        "p95": 52.4,
+        "p99": 140.1,
+        "max": 252.0
+      },
+      "server_cpu_percent": {
+        "mean": 73.1,
+        "peak": 115.4
+      },
+      "server_memory_mb": {
+        "idle": 277.7,
+        "peak": 279.9
+      },
+      "sessions_finished": 10,
+      "answers_stored": 150
+    },
+    {
+      "learners": 30,
+      "mode": "shadow",
+      "requests": 1500,
+      "failed_requests": 0,
+      "error_examples": [],
+      "wall_time_s": 5.59,
+      "throughput_req_per_s": 268.5,
+      "latency_ms": {
+        "answer": {
+          "median": 43.4,
+          "p95": 391.1,
+          "max": 752.4,
+          "n": 450
+        },
+        "checkin": {
+          "median": 35.7,
+          "p95": 310.8,
+          "max": 515.5,
+          "n": 90
+        },
+        "event": {
+          "median": 44.1,
+          "p95": 367.7,
+          "max": 1163.7,
+          "n": 450
+        },
+        "finish": {
+          "median": 12.7,
+          "p95": 130.6,
+          "max": 165.9,
+          "n": 30
+        },
+        "join": {
+          "median": 75.6,
+          "p95": 117.4,
+          "max": 125.1,
+          "n": 30
+        },
+        "question": {
+          "median": 54.3,
+          "p95": 384.3,
+          "max": 822.9,
+          "n": 450
+        }
+      },
+      "latency_all_ms": {
+        "median": 42.7,
+        "p95": 369.6,
+        "p99": 606.6,
+        "max": 1163.7
+      },
+      "server_cpu_percent": {
+        "mean": 31.2,
+        "peak": 90.2
+      },
+      "server_memory_mb": {
+        "idle": 238.3,
+        "peak": 219.0
+      },
+      "sessions_finished": 30,
+      "answers_stored": 450
+    },
+    {
+      "learners": 60,
+      "mode": "shadow",
+      "requests": 3000,
+      "failed_requests": 0,
+      "error_examples": [],
+      "wall_time_s": 13.18,
+      "throughput_req_per_s": 227.5,
+      "latency_ms": {
+        "answer": {
+          "median": 143.4,
+          "p95": 887.6,
+          "max": 2881.9,
+          "n": 900
+        },
+        "checkin": {
+          "median": 83.1,
+          "p95": 644.4,
+          "max": 2161.5,
+          "n": 180
+        },
+        "event": {
+          "median": 128.8,
+          "p95": 977.5,
+          "max": 2452.1,
+          "n": 900
+        },
+        "finish": {
+          "median": 30.2,
+          "p95": 235.7,
+          "max": 370.6,
+          "n": 60
+        },
+        "join": {
+          "median": 92.0,
+          "p95": 369.1,
+          "max": 759.6,
+          "n": 60
+        },
+        "question": {
+          "median": 129.9,
+          "p95": 1058.6,
+          "max": 3681.2,
+          "n": 900
+        }
+      },
+      "latency_all_ms": {
+        "median": 127.2,
+        "p95": 947.4,
+        "p99": 1629.4,
+        "max": 3681.2
+      },
+      "server_cpu_percent": {
+        "mean": 27.7,
+        "peak": 110.6
+      },
+      "server_memory_mb": {
+        "idle": 306.5,
+        "peak": 308.0
+      },
+      "sessions_finished": 60,
+      "answers_stored": 900
+    },
+    {
+      "learners": 100,
+      "mode": "shadow",
+      "requests": 5000,
+      "failed_requests": 0,
+      "error_examples": [],
+      "wall_time_s": 15.73,
+      "throughput_req_per_s": 317.8,
+      "latency_ms": {
+        "answer": {
+          "median": 186.3,
+          "p95": 877.6,
+          "max": 2535.0,
+          "n": 1500
+        },
+        "checkin": {
+          "median": 148.8,
+          "p95": 715.7,
+          "max": 1390.1,
+          "n": 300
+        },
+        "event": {
+          "median": 197.9,
+          "p95": 948.7,
+          "max": 2482.8,
+          "n": 1500
+        },
+        "finish": {
+          "median": 76.1,
+          "p95": 425.0,
+          "max": 1141.9,
+          "n": 100
+        },
+        "join": {
+          "median": 228.3,
+          "p95": 986.8,
+          "max": 2367.3,
+          "n": 100
+        },
+        "question": {
+          "median": 200.4,
+          "p95": 905.7,
+          "max": 2608.8,
+          "n": 1500
+        }
+      },
+      "latency_all_ms": {
+        "median": 189.4,
+        "p95": 903.0,
+        "p99": 1396.2,
+        "max": 2608.8
+      },
+      "server_cpu_percent": {
+        "mean": 39.8,
+        "peak": 117.6
+      },
+      "server_memory_mb": {
+        "idle": 314.4,
+        "peak": 309.2
+      },
+      "sessions_finished": 100,
+      "answers_stored": 1500
+    },
+    {
+      "learners": 10,
+      "mode": "adaptive",
+      "requests": 500,
+      "failed_requests": 0,
+      "error_examples": [],
+      "wall_time_s": 2.58,
+      "throughput_req_per_s": 193.9,
+      "latency_ms": {
+        "answer": {
+          "median": 4.6,
+          "p95": 16.0,
+          "max": 1927.8,
+          "n": 150
+        },
+        "checkin": {
+          "median": 3.1,
+          "p95": 11.8,
+          "max": 12.6,
+          "n": 30
+        },
+        "event": {
+          "median": 3.6,
+          "p95": 40.0,
+          "max": 2432.8,
+          "n": 150
+        },
+        "finish": {
+          "median": 6.1,
+          "p95": 43.2,
+          "max": 43.2,
+          "n": 10
+        },
+        "join": {
+          "median": 15.6,
+          "p95": 1938.9,
+          "max": 1938.9,
+          "n": 10
+        },
+        "question": {
+          "median": 2.4,
+          "p95": 6.3,
+          "max": 11.9,
+          "n": 150
+        }
+      },
+      "latency_all_ms": {
+        "median": 3.4,
+        "p95": 15.6,
+        "p99": 2037.3,
+        "max": 2432.8
+      },
+      "server_cpu_percent": {
+        "mean": 79.1,
+        "peak": 99.7
+      },
+      "server_memory_mb": {
+        "idle": 288.1,
+        "peak": 407.9
+      },
+      "sessions_finished": 10,
+      "answers_stored": 150
+    },
+    {
+      "learners": 30,
+      "mode": "adaptive",
+      "requests": 1500,
+      "failed_requests": 0,
+      "error_examples": [],
+      "wall_time_s": 5.45,
+      "throughput_req_per_s": 275.0,
+      "latency_ms": {
+        "answer": {
+          "median": 19.7,
+          "p95": 321.5,
+          "max": 2964.5,
+          "n": 450
+        },
+        "checkin": {
+          "median": 21.1,
+          "p95": 192.7,
+          "max": 467.1,
+          "n": 90
+        },
+        "event": {
+          "median": 16.5,
+          "p95": 262.7,
+          "max": 2855.7,
+          "n": 450
+        },
+        "finish": {
+          "median": 20.1,
+          "p95": 165.1,
+          "max": 242.8,
+          "n": 30
+        },
+        "join": {
+          "median": 46.6,
+          "p95": 2961.4,
+          "max": 3061.8,
+          "n": 30
+        },
+        "question": {
+          "median": 7.9,
+          "p95": 112.3,
+          "max": 780.5,
+          "n": 450
+        }
+      },
+      "latency_all_ms": {
+        "median": 16.1,
+        "p95": 252.1,
+        "p99": 2143.3,
+        "max": 3061.8
+      },
+      "server_cpu_percent": {
+        "mean": 65.0,
+        "peak": 110.8
+      },
+      "server_memory_mb": {
+        "idle": 304.5,
+        "peak": 400.5
+      },
+      "sessions_finished": 30,
+      "answers_stored": 450
+    },
+    {
+      "learners": 60,
+      "mode": "adaptive",
+      "requests": 3000,
+      "failed_requests": 0,
+      "error_examples": [],
+      "wall_time_s": 17.28,
+      "throughput_req_per_s": 173.6,
+      "latency_ms": {
+        "answer": {
+          "median": 142.8,
+          "p95": 1343.9,
+          "max": 3780.6,
+          "n": 900
+        },
+        "checkin": {
+          "median": 87.3,
+          "p95": 1056.3,
+          "max": 5678.0,
+          "n": 180
+        },
+        "event": {
+          "median": 137.8,
+          "p95": 1269.1,
+          "max": 3790.2,
+          "n": 900
+        },
+        "finish": {
+          "median": 29.0,
+          "p95": 180.4,
+          "max": 362.1,
+          "n": 60
+        },
+        "join": {
+          "median": 77.5,
+          "p95": 2465.1,
+          "max": 2546.8,
+          "n": 60
+        },
+        "question": {
+          "median": 134.0,
+          "p95": 1724.5,
+          "max": 3354.8,
+          "n": 900
+        }
+      },
+      "latency_all_ms": {
+        "median": 130.7,
+        "p95": 1609.9,
+        "p99": 2452.5,
+        "max": 5678.0
+      },
+      "server_cpu_percent": {
+        "mean": 35.1,
+        "peak": 127.0
+      },
+      "server_memory_mb": {
+        "idle": 305.4,
+        "peak": 365.4
+      },
+      "sessions_finished": 60,
+      "answers_stored": 900
+    },
+    {
+      "learners": 100,
+      "mode": "adaptive",
+      "requests": 5000,
+      "failed_requests": 0,
+      "error_examples": [],
+      "wall_time_s": 25.43,
+      "throughput_req_per_s": 196.6,
+      "latency_ms": {
+        "answer": {
+          "median": 235.8,
+          "p95": 1867.0,
+          "max": 6003.8,
+          "n": 1500
+        },
+        "checkin": {
+          "median": 161.5,
+          "p95": 1158.6,
+          "max": 3238.1,
+          "n": 300
+        },
+        "event": {
+          "median": 238.7,
+          "p95": 2040.9,
+          "max": 5269.3,
+          "n": 1500
+        },
+        "finish": {
+          "median": 109.1,
+          "p95": 751.6,
+          "max": 1371.6,
+          "n": 100
+        },
+        "join": {
+          "median": 2151.7,
+          "p95": 2527.8,
+          "max": 2642.4,
+          "n": 100
+        },
+        "question": {
+          "median": 219.4,
+          "p95": 2130.6,
+          "max": 5611.2,
+          "n": 1500
+        }
+      },
+      "latency_all_ms": {
+        "median": 224.2,
+        "p95": 2144.1,
+        "p99": 3878.6,
+        "max": 6003.8
+      },
+      "server_cpu_percent": {
+        "mean": 32.6,
+        "peak": 121.7
+      },
+      "server_memory_mb": {
+        "idle": 301.7,
+        "peak": 402.9
+      },
+      "sessions_finished": 100,
+      "answers_stored": 1500
+    }
+  ]
+}

@@ -37,6 +37,13 @@ class Stage1Labeler(StateLabeler):
     def _bundle(self) -> dict:
         return joblib.load(self.model_path)
 
+    def warm_up(self) -> None:
+        # Loading the model also imports scikit-learn and SciPy, about two
+        # seconds the first time; the stress test showed it landing on the first
+        # adaptive learner's answer.
+        model = self._bundle["model"]
+        model.predict_proba(np.zeros((1, len(self._bundle["features"]))))
+
     def features(self, history: LearnerHistory) -> dict[str, float]:
         return {
             "error_rate": history.error_rate(WINDOW),

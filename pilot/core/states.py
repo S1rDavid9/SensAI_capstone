@@ -44,5 +44,5 @@ OBSERVER_CODES = frozenset({*(s.value for s in BehaviouralState), "off_task", "c
 CHECKIN_CHOICES = frozenset({"easy", "good", "hard", "lost"})
 LEARNER_EVENT_TYPES = frozenset({
     "question_shown", "first_input", "input_changed", "idle",
-    "focus_lost", "focus_returned", "session_resumed",
+    "focus_lost", "focus_returned", "session_resumed", "device_info",
 })

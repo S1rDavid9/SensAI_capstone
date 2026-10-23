@@ -2376,6 +2376,7 @@ dependencies = [
 
 [package.optional-dependencies]
 analysis = [
+    { name = "psutil" },
     { name = "scikit-learn" },
     { name = "scipy", version = "1.17.1", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.12'" },
     { name = "scipy", version = "1.18.1", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.12'" },
@@ -2404,6 +2405,7 @@ requires-dist = [
     { name = "notebook", marker = "extra == 'notebook'", specifier = ">=7" },
     { name = "numpy", specifier = ">=1.26.0" },
     { name = "pandas", specifier = ">=2.2.0" },
+    { name = "psutil", marker = "extra == 'analysis'", specifier = ">=7.2.2" },
     { name = "pyopengl", specifier = ">=3.1.7" },
     { name = "pyopengl-accelerate", specifier = ">=3.1.7" },
     { name = "pytest", marker = "extra == 'dev'", specifier = ">=8.0.0" },

@@ -137,6 +137,18 @@ export default function Learner() {
       save(STORAGE_KEY, JSON.stringify(a));
       setAuth(a);
       setNQuestions(res.n_questions);
+      // Record which device and browser this session runs on (compatibility evidence).
+      api("/api/learner/event", {
+        ...a, type: "device_info", client_ms: serverNow(),
+        payload: {
+          user_agent: navigator.userAgent,
+          screen: `${screen.width}x${screen.height}`,
+          viewport: `${window.innerWidth}x${window.innerHeight}`,
+          pixel_ratio: window.devicePixelRatio,
+          touch: navigator.maxTouchPoints > 0,
+          cpu_cores: navigator.hardwareConcurrency ?? null,
+        },
+      }).catch(() => {});
       if (res.resumed) await loadQuestion(a);
       else setPhase("welcome");
     } catch (err) {

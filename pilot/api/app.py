@@ -38,7 +38,9 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     @asynccontextmanager
     async def lifespan(_app):
         db.initialise()
-        policy.warm_up()   # load the DQN now, not on the first learner's answer
+        policy.warm_up()   # load the models now, not on the first learner's answer
+        for mode in modes.values():
+            mode.labeler.warm_up()
         yield
 
     app = FastAPI(title="SensAI", lifespan=lifespan)

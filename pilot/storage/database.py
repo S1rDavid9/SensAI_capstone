@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import fcntl
 import sqlite3
 import time
 from contextlib import contextmanager
@@ -101,19 +102,40 @@ class Database:
         self.path = Path(path)
 
     def initialise(self) -> None:
+        """Create or upgrade the database. Safe to call from several worker
+        processes at once: a file lock makes them take turns (without it the
+        stress test hit "database is locked" when four workers started together)."""
         self.path.parent.mkdir(parents=True, exist_ok=True)
+        with open(self.path.with_suffix(".init.lock"), "w") as lock:
+            fcntl.flock(lock, fcntl.LOCK_EX)
+            try:
+                self._create_or_upgrade()
+            finally:
+                fcntl.flock(lock, fcntl.LOCK_UN)
+
+    def _create_or_upgrade(self) -> None:
         with self.connect() as con:
+            # Write-ahead logging lets many learners read while one answer is
+            # written, instead of every request waiting for a single lock.
+            # Found necessary by the stress test (docs/testing).
+            con.execute("PRAGMA journal_mode = WAL")
             con.executescript(SCHEMA)
             for table, column, spec in MIGRATIONS:
                 existing = {r[1] for r in con.execute(f"PRAGMA table_info({table})")}
                 if column not in existing:
-                    con.execute(f"ALTER TABLE {table} ADD COLUMN {column} {spec}")
+                    try:
+                        con.execute(f"ALTER TABLE {table} ADD COLUMN {column} {spec}")
+                    except sqlite3.OperationalError as e:
+                        # Several worker processes may upgrade at the same moment.
+                        if "duplicate column" not in str(e):
+                            raise
 
     @contextmanager
     def connect(self) -> Iterator[sqlite3.Connection]:
-        con = sqlite3.connect(self.path, timeout=10)
+        con = sqlite3.connect(self.path, timeout=30)
         con.row_factory = sqlite3.Row
         con.execute("PRAGMA foreign_keys = ON")
+        con.execute("PRAGMA synchronous = NORMAL")   # safe with WAL; avoids a disk sync per request
         try:
             yield con
             con.commit()

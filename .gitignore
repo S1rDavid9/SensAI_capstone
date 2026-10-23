@@ -22,3 +22,4 @@ pilot/data/
 pilot/web/node_modules/
 pilot/web/dist/
 *.tsbuildinfo
+*.init.lock

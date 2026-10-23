@@ -15,3 +15,6 @@ class StateLabeler(ABC):
     @abstractmethod
     def label(self, history: LearnerHistory) -> BehaviouralState:
         """`history` always contains at least one answer."""
+
+    def warm_up(self) -> None:
+        """Load anything slow before the first learner arrives (default: nothing)."""

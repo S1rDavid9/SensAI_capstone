@@ -46,6 +46,9 @@ class DQNPolicy(ActionScorer):
 
     def warm_up(self) -> None:
         """Load the network now rather than on the first learner's answer."""
+        # One thread: the network is tiny (5,320 weights), and several threads
+        # per prediction only compete with each other under load (stress test).
+        torch.set_num_threads(1)
         _ = self._loaded
 
     def scores(self, observation: np.ndarray) -> np.ndarray:
