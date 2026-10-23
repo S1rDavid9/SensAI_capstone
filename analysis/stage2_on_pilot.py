@@ -81,7 +81,7 @@ def rating_sheet(df: pd.DataFrame, n_per_state: int = 20, seed: int = 0) -> pd.D
     items = []
     for _, r in picks.iterrows():
         items.append({**r.to_dict(), "action_shown": r.dqn_action, "version": "dqn"})
-        if r.guardrail:
+        if isinstance(r.guardrail, str):   # NaN (no guardrail) is truthy, so test the type
             items.append({**r.to_dict(), "action_shown": r.final_action, "version": "guarded"})
     sheet = pd.DataFrame(items).sample(frac=1, random_state=int(rng.integers(1e6))).reset_index(drop=True)
     sheet.insert(0, "item", range(1, len(sheet) + 1))
