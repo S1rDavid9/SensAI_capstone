@@ -98,6 +98,7 @@ def run_target(p, url: str, t: Target) -> dict:
         page.fill(".code-input", code)
         page.click("button.big")
         page.wait_for_selector("text=Let's go!")
+        page.wait_for_timeout(400)   # let the entrance animation finish before the screenshot
         page.screenshot(path=SHOTS / f"{slug}-welcome.jpg")
         page.click("text=Let's go!")
         layout = None
