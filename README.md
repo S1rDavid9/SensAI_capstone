@@ -35,7 +35,7 @@ States describe what a learner is **observably doing**, not how they feel. SensA
 | | Result |
 |---|---|
 | Pilot | 31 learners started, 30 completed all 15 questions; 463 answers, 94 check-ins |
-| Stage 1 (leave-one-learner-out) | Balanced accuracy **0.67** (chance 0.33); detects "needs support" with AUC **0.90**. Error rate carries almost all of the signal. |
+| Stage 1 (leave-one-learner-out) | Balanced accuracy **0.67** (chance 0.33); detects "needs support" with AUC **0.90**. Error rate carries almost all of the signal. Against the 24 adult observations it agreed only 5 times: self-report and observation seem to capture different things. |
 | Stage 2 on the real pilot data | Under-challenged → move on / challenge; needs support → simplified repeat, easier, encourage. On-task is the weak spot (the DQN wants to make it easier; the guardrail blocks it in 94 cases). |
 | Simulator v2 | The DQN no longer moves on when the learner is confused (69% → 0%); PPO, A2C and REINFORCE collapse to one or two actions, so DQN is the policy carried forward. |
 
