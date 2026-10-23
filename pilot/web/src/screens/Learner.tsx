@@ -1,10 +1,12 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { api, ApiError, load, save, serverNow, syncClock } from "../api";
+import Mascot from "../components/Mascot";
 import { CHECKIN_CHOICES } from "../states";
 
 type Support = { message: string; hint: string | null };
 
 type Question = {
+  id: string;
   index: number;
   kind: string;
   domain: "arithmetic" | "pattern";
@@ -19,7 +21,7 @@ type Phase = "join" | "welcome" | "question" | "feedback" | "checkin" | "done";
 
 const STORAGE_KEY = "sensai.learner";
 const IDLE_MS = 20_000;
-const ENCOURAGEMENT = ["Nice work!", "Great thinking!", "You got it!", "Well done!"];
+const ENCOURAGEMENT = ["Nice work!", "Great thinking!", "You got it!", "Well done!", "Brilliant!", "Super!"];
 
 export default function Learner() {
   const [phase, setPhase] = useState<Phase>("join");
@@ -237,21 +239,25 @@ export default function Learner() {
   }
 
   const progress = question ? question.index + (phase === "question" ? 0 : 1) : 0;
+  const praise = ENCOURAGEMENT[(question?.index ?? 0) % ENCOURAGEMENT.length];
 
   return (
     <main className="learner">
       {phase !== "join" && phase !== "done" && (
-        <div className="progress" aria-label={`Question ${progress} of ${nQuestions}`}>
+        <ol className="star-path" aria-label={`Puzzle ${Math.min(progress + 1, nQuestions)} of ${nQuestions}`}>
           {Array.from({ length: nQuestions }, (_, i) => (
-            <span key={i} className={i < progress ? "dot done" : i === progress ? "dot now" : "dot"} />
+            <li key={i} className={i < progress ? "star done" : i === progress ? "star now" : "star"} aria-hidden>
+              {i < progress ? "★" : i + 1}
+            </li>
           ))}
-        </div>
+        </ol>
       )}
 
       {phase === "join" && (
-        <form className="card center" onSubmit={join}>
+        <form className="card center pop" onSubmit={join}>
+          <Mascot mood="hello" size={120} />
           <h1 className="brand">Sens<span>AI</span></h1>
-          <p>Type the code the researcher gave you.</p>
+          <p className="lead">Hi! Type the code the researcher gave you.</p>
           <input
             className="code-input"
             value={codeInput}
@@ -267,23 +273,31 @@ export default function Learner() {
       )}
 
       {phase === "welcome" && (
-        <div className="card center">
-          <h1>Hi there! 👋</h1>
+        <div className="card center pop">
+          <div className="speaker">
+            <Mascot mood="hello" size={110} />
+            <p className="bubble">I'm Sena! Let's do some puzzles together.</p>
+          </div>
           <p className="lead">
-            You'll see {nQuestions} puzzles: some sums and some number patterns. They start easy and get harder.
+            You'll see {nQuestions} puzzles: sums, number patterns, shapes and letters. They start easy and get harder.
           </p>
           <ul className="rules">
-            <li>Take your time. This is not a test and there's no score.</li>
-            <li>If you're not sure, press <b>Need a hint?</b></li>
-            <li>Now and then we'll ask how it's going.</li>
+            <li><span aria-hidden>🌱</span> Take your time. This is not a test and there's no score.</li>
+            <li><span aria-hidden>💡</span> If you're not sure, press <b>Need a hint?</b></li>
+            <li><span aria-hidden>🙂</span> Now and then I'll ask how it's going.</li>
           </ul>
-          <button className="big" onClick={() => auth && loadQuestion(auth)}>Let's go</button>
+          <button className="big" onClick={() => auth && loadQuestion(auth)}>Let's go!</button>
         </div>
       )}
 
       {phase === "question" && question && (
-        <form className="card question" onSubmit={submit}>
-          {support && <p className="support">{support.message}</p>}
+        <form className="card question pop" key={question.id} onSubmit={submit}>
+          {support && (
+            <div className="speaker small">
+              <Mascot mood={support.hint ? "thinking" : "cheering"} size={64} />
+              <p className="bubble">{support.message}</p>
+            </div>
+          )}
           <p className="instruction">{question.instruction}</p>
           <p className={question.kind === "word_problem" ? "prompt story" : "prompt"}>{question.prompt}</p>
           {question.choices.length > 0 ? (
@@ -309,10 +323,11 @@ export default function Learner() {
               onChange={onInput}
               inputMode="numeric"
               autoComplete="off"
+              placeholder="?"
               aria-label="Your answer"
             />
           )}
-          {hint && <p className="hint">💡 {hint}</p>}
+          {hint && <p className="hint"><span aria-hidden>💡</span> {hint}</p>}
           {error && <p className="error">{error}</p>}
           <div className="row">
             <button type="button" className="ghost" onClick={askHint} disabled={!!hint}>
@@ -324,13 +339,14 @@ export default function Learner() {
       )}
 
       {phase === "feedback" && feedback && (
-        <div className={`card center feedback ${feedback.correct ? "yes" : "no"}`}>
+        <div className={`card center feedback pop ${feedback.correct ? "yes" : "no"}`}>
+          <Mascot mood={feedback.correct ? "cheering" : "gentle"} size={110} />
           {feedback.correct ? (
-            <h2>✅ {ENCOURAGEMENT[(question?.index ?? 0) % ENCOURAGEMENT.length]}</h2>
+            <h2>{praise}</h2>
           ) : (
             <>
               <h2>Not quite</h2>
-              <p className="lead">The answer was <b>{feedback.correctAnswer}</b>. On to the next one!</p>
+              <p className="lead">The answer was <b className="answer-reveal">{feedback.correctAnswer}</b>. You'll get the next one!</p>
             </>
           )}
           <button className="big" onClick={next} autoFocus>
@@ -340,8 +356,11 @@ export default function Learner() {
       )}
 
       {phase === "checkin" && (
-        <div className="card center">
-          <h2>How is it going?</h2>
+        <div className="card center pop">
+          <div className="speaker">
+            <Mascot mood="thinking" size={90} />
+            <p className="bubble">How is it going?</p>
+          </div>
           <p className="muted">Pick the one that fits best. There's no wrong answer.</p>
           <div className="faces">
             {CHECKIN_CHOICES.map((c) => (
@@ -355,9 +374,13 @@ export default function Learner() {
       )}
 
       {phase === "done" && (
-        <div className="card center">
-          <h1>🎉 All done!</h1>
-          <p className="lead">Thank you for helping. You can tell the researcher you've finished.</p>
+        <div className="card center pop done-card">
+          <div className="confetti" aria-hidden>
+            {Array.from({ length: 18 }, (_, i) => <i key={i} style={{ ["--i" as string]: i }} />)}
+          </div>
+          <Mascot mood="cheering" size={140} />
+          <h1>All done!</h1>
+          <p className="lead">Thank you for helping me learn. You can tell the researcher you've finished.</p>
         </div>
       )}
     </main>
