@@ -93,7 +93,8 @@ body:has(.learner) {
   font-family: ui-rounded, "SF Pro Rounded", "Nunito", system-ui, sans-serif;
 }
 .learner .card { border-radius: 28px; border: none; box-shadow: 0 10px 30px rgba(91, 62, 170, 0.12); }
-.learner button { border-radius: 18px; transition: transform 0.08s ease, box-shadow 0.15s ease; }
+.learner button { border-radius: 18px; min-height: 48px; transition: transform 0.08s ease, box-shadow 0.15s ease; }
+.learner input { min-height: 48px; }   /* touch targets of at least 48 px (compatibility test found 43 px) */
 .learner button:not(:disabled):active { transform: scale(0.96); }
 .learner button.big { background: linear-gradient(180deg, #7c5cd6, #6544c4); box-shadow: 0 4px 0 #4b2fa3; font-size: 1.3rem; }
 .learner button.big:not(:disabled):active { box-shadow: 0 1px 0 #4b2fa3; transform: translateY(3px); }

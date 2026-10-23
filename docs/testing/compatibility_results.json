@@ -1,0 +1,74 @@
+[
+  {
+    "target": "Chrome \u00b7 Android phone (Pixel 7)",
+    "browser_version": "155.0.8059.85",
+    "passed": true,
+    "load_ms": 51,
+    "horizontal_overflow_px": 0,
+    "smallest_tap_target_px": 47,
+    "session_seconds": 13.8,
+    "js_errors": [],
+    "observer_screen": "loads and accepts the observer key"
+  },
+  {
+    "target": "Chrome \u00b7 Chromebook (1366\u00d7768)",
+    "browser_version": "155.0.8059.85",
+    "passed": true,
+    "load_ms": 34,
+    "horizontal_overflow_px": 0,
+    "smallest_tap_target_px": 47,
+    "session_seconds": 13.7,
+    "js_errors": []
+  },
+  {
+    "target": "Chrome \u00b7 desktop (1920\u00d71080)",
+    "browser_version": "155.0.8059.85",
+    "passed": true,
+    "load_ms": 42,
+    "horizontal_overflow_px": 0,
+    "smallest_tap_target_px": 47,
+    "session_seconds": 14.2,
+    "js_errors": []
+  },
+  {
+    "target": "Safari engine \u00b7 iPhone 13",
+    "browser_version": "27.2",
+    "passed": true,
+    "load_ms": 98,
+    "horizontal_overflow_px": 0,
+    "smallest_tap_target_px": 47,
+    "session_seconds": 13.8,
+    "js_errors": [],
+    "observer_screen": "loads and accepts the observer key"
+  },
+  {
+    "target": "Safari engine \u00b7 iPad",
+    "browser_version": "27.2",
+    "passed": true,
+    "load_ms": 40,
+    "horizontal_overflow_px": 0,
+    "smallest_tap_target_px": 48,
+    "session_seconds": 14.0,
+    "js_errors": []
+  },
+  {
+    "target": "Safari engine \u00b7 Mac laptop (1440\u00d7900)",
+    "browser_version": "27.2",
+    "passed": true,
+    "load_ms": 55,
+    "horizontal_overflow_px": 0,
+    "smallest_tap_target_px": 47,
+    "session_seconds": 14.1,
+    "js_errors": []
+  },
+  {
+    "target": "Firefox \u00b7 laptop (1366\u00d7768)",
+    "browser_version": "157.0",
+    "passed": true,
+    "load_ms": 110,
+    "horizontal_overflow_px": 0,
+    "smallest_tap_target_px": 47,
+    "session_seconds": 12.7,
+    "js_errors": []
+  }
+]
