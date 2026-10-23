@@ -1,156 +1,143 @@
 # SensAI
 
-SensAI is my BSc Software Engineering capstone at African Leadership University. It is a two-stage system for school-age learners aged 8–14:
+SensAI is my BSc Software Engineering capstone at African Leadership University. It is a web app for learners aged 8 to 14 that notices how a child is working through maths and pattern puzzles, and responds with the right kind of help.
 
-1. **Stage 1** reads non-invasive telemetry from a learning task (response time, error rate, hint count, time on task) and estimates a behavioural engagement-risk state.
-2. **Stage 2** takes that state and picks an instructional scaffolding action (for example lower the difficulty, offer a hint, encourage, move to the next topic) using a DQN policy.
+After every answer it runs a two-stage loop:
 
-**This repository is the Stage 2 prototype.** The policy is trained and evaluated entirely in simulation, in a custom Gymnasium environment called `AdaptLearn-v1`, and is served through a FastAPI app. Stage 1 and the pilot with real learners are the next phase and are not in this repository yet.
+1. **Stage 1 (state classifier):** reads the learner's recent telemetry (errors and response time over the last five answers) and estimates a behavioural state: *on task*, *rushing* (under-challenged) or *struggling* (needs support).
+2. **Stage 2 (scaffolding policy):** a Deep Q-Network trained in simulation picks one of eight actions (easier, harder, different type, hint, encouragement, challenge, simplified repeat, move on). Guardrails rule out actions no teacher would choose.
+3. **Adaptation:** the app applies the action. It picks the next question and shows the learner a short message from Sena the owl, or a hint straight away.
 
-The simulator names its four learner states `FRUSTRATED`, `BORED`, `CONFUSED` and `ENGAGED`. Those are labels for simulated states. SensAI works with behavioural engagement inferred from interaction signals and does not claim to detect emotions in real children. Results here show how the policy behaves under the simulator's assumptions, not learning gains in a classroom.
+States describe what a learner is **observably doing**, not how they feel. SensAI does not claim to detect emotions.
 
+- **Walkthrough video:** _link to be added_
+- **Technical report (PDF):** _link to be added_
 - **Repository:** https://github.com/S1rDavid9/SensAI_capstone
-- **Model notebook:** [`ModelNotebook.ipynb`](ModelNotebook.ipynb)
-- **Demo video:** https://youtu.be/XzzJWfNrnK0
 
-## How it fits together
+<p align="center">
+  <img src="docs/testing/compatibility/safari-engine-iphone-13-question.jpg" width="260" alt="Learner screen on an iPhone: Sena the owl gives encouragement above a subtraction question">
+  &nbsp;
+  <img src="docs/testing/compatibility/chrome-1366x768-welcome.jpg" width="440" alt="Welcome screen on a Chromebook">
+</p>
 
-```mermaid
-flowchart LR
-    A[Learning task UI] -->|response time, error rate,<br/>hint count, time on task| B[Stage 1: engagement-risk classifier<br/>next phase]
-    B -->|engagement-risk state| C[Stage 2: DQN scaffolding policy<br/>this repository]
-    C -->|scaffolding action| A
-    D[AdaptLearn-v1 simulator] -.->|training and evaluation only| C
-```
+## What is in this repository
 
-| Part | Status |
+| Part | What it does | Status |
+|---|---|---|
+| **Simulation and Stage 2** (`environment/`, `training/`) | `AdaptLearn-v1` Gymnasium environment; DQN, PPO, A2C and REINFORCE trained and compared (12 configurations each). Simulator v2 closes two reward loopholes found in the pilot. | Done |
+| **Pilot app** (`pilot/`, shadow mode) | Learner, observer and researcher screens used with 31 learners at Excella School, Kigali, on 21 October 2026. The DQN ran in shadow mode: its decisions were stored and **never shown to or used for learners**. | Done, data collected |
+| **Stage 1 classifier** (`analysis/`, `models/stage1/`) | Trained on the learners' own check-ins, evaluated by leaving each learner out. | Done |
+| **Final MVP** (`pilot/`, adaptive mode) | The closed loop: Stage 1 → shielded DQN → next question and support. | Done; demonstrated by the researcher, not used with children (see Ethics) |
+| **Testing** (`tests/`, `docs/testing/`) | Unit, integration, stress and cross-browser tests. | Done |
+
+## Results at a glance
+
+| | Result |
 |---|---|
-| `AdaptLearn-v1` simulation environment | Built, 32 automated tests |
-| DQN policy, with PPO / A2C / REINFORCE baselines | Trained and evaluated in simulation |
-| JSON API with Swagger UI | Built, runs locally |
-| Stage 1 classifier and telemetry-logging UI | Next phase |
-| Pilot with learners (after ethics approval) | Next phase |
+| Pilot | 31 learners started, 30 completed all 15 questions; 463 answers, 94 check-ins |
+| Stage 1 (leave-one-learner-out) | Balanced accuracy **0.67** (chance 0.33); detects "needs support" with AUC **0.90**. Error rate carries almost all of the signal. |
+| Stage 2 on the real pilot data | Under-challenged → move on / challenge; needs support → simplified repeat, easier, encourage. On-task is the weak spot (the DQN wants to make it easier; the guardrail blocks it in 94 cases). |
+| Simulator v2 | The DQN no longer moves on when the learner is confused (69% → 0%); PPO, A2C and REINFORCE collapse to one or two actions, so DQN is the policy carried forward. |
 
-## Setup
+Full analysis: `analysis/results/stage1.json`, `analysis/results/stage2_pilot.json`, `logs/v2/evaluation.md`.
 
-Requires Python 3.11 or 3.12 and [uv](https://docs.astral.sh/uv/).
+## Technical requirements
+
+| | Version used |
+|---|---|
+| macOS (tested), Linux, or Windows with WSL | macOS 26 on Apple M1, 8 GB RAM |
+| Python | 3.11 (3.11 or 3.12 supported) |
+| [uv](https://docs.astral.sh/uv/) | Python package manager |
+| Node.js | 20 or later (built with 25.5) |
+| Backend | FastAPI 0.141, Uvicorn 0.52, Pydantic 2.13, SQLite |
+| Machine learning | PyTorch 2.13, Stable-Baselines3 2.9, Gymnasium 1.3, scikit-learn 1.9, XGBoost 3.2, NumPy 2.4, pandas 3.0 |
+| Frontend | React 19, React Router 7, TypeScript 5.9, Vite 7 |
+| Testing | pytest 9, Playwright 1.64 (Chrome, WebKit, Firefox) |
+| Learner devices | Any modern browser. Tested on Chromebooks, iPhone, iPad, Android, Mac and Windows laptops. |
+
+XGBoost on macOS also needs OpenMP: `brew install libomp`.
+
+## Installation
 
 ```bash
 git clone https://github.com/S1rDavid9/SensAI_capstone.git
 cd SensAI_capstone
-uv sync --extra dev --extra notebook
+uv sync --extra dev --extra analysis
+cd pilot/web && npm install && npm run build && cd ../..
 uv run pytest
 ```
 
-### Run the API (the MVP)
+## Running the app
+
+Start the server from the repository root:
 
 ```bash
-uv run uvicorn api.app:app
+PILOT_RESEARCHER_KEY=choose-a-key PILOT_OBSERVER_KEY=teacher-key uv run uvicorn pilot.server:app --host 0.0.0.0 --port 8001
 ```
 
-Open http://127.0.0.1:8000/docs for the Swagger UI.
+| Screen | Address | For |
+|---|---|---|
+| Researcher | http://localhost:8001/researcher | Create a session (only after recording guardian consent and learner assent), choose **Pilot** or **Adaptive** mode, follow answers and decisions live, export CSVs |
+| Learner | http://localhost:8001/learn | The child's screen: enter the code (P01, P02, …) and do the puzzles |
+| Observer | http://localhost:8001/observe | Researcher's or teacher's phone: every 20 seconds, code what one learner is doing |
 
-| Endpoint | What it does |
-|---|---|
-| `POST /reset` | Starts an episode with a new simulated learner. Optional `algo` (`dqn` by default) and `seed`. |
-| `POST /step` | Advances one step. With an empty body `{}` the trained policy chooses the action. Pass `{"action": 0-7}` to choose it yourself. |
-| `GET /episode-summary` | Returns every step of the current episode. |
+Other devices on the same Wi-Fi use the laptop's address instead of `localhost` (`ipconfig getifaddr en0` on a Mac). Without the environment variables the keys are `sensai-dev` and `sensai-observe`, for local testing only. Set `PILOT_DB=pilot/data/demo.sqlite3` to practise without touching real data.
 
-Request and response examples are in [`api/README.md`](api/README.md).
+To try the closed loop: create a session in **Adaptive** mode, then answer quickly and correctly (SensAI moves on and adds challenges) or keep getting answers wrong (it eases off, simplifies and encourages). The researcher screen shows every decision, including where a guardrail changed the DQN's choice.
 
-### Open the notebook
+## Testing
 
 ```bash
-uv run jupyter notebook ModelNotebook.ipynb
+uv run pytest                                          # 77 unit and integration tests
+uv run pytest --cov=pilot                              # coverage (app code: 96%)
+uv run python -m tests.performance.load_test           # stress test: 10-100 learners at once
+uv run python -m tests.compatibility.browser_matrix    # full sessions in Chrome, WebKit and Firefox
 ```
 
-The notebook is committed with its outputs. It reads the saved logs and models, so it runs in under a minute and does not retrain anything.
+| Approach | Result | Improvements made from it |
+|---|---|---|
+| Unit and integration (pytest) | 77 tests, 96% of `pilot/` covered; includes a test that shadow-mode decisions never reach the learner | |
+| Stress (`docs/testing/load_test_results.md`) | 0 failed requests out of 32,000 at 10-100 simultaneous learners, both modes; at 30 learners with no thinking time, 95% of requests under 0.45 s | Fixed "database is locked" when several workers start; loaded the Stage 1 model at startup (removed a 2 s delay); SQLite WAL mode |
+| Compatibility (`docs/testing/compatibility_results.md`) | 7/7 browser and device targets pass full sessions; no JavaScript errors, no horizontal overflow | Raised learner buttons from 43 px to at least 48 px |
+| Field test (the pilot) | 31 learners on Chromebooks, phones, iPads and laptops in Chrome, in batches of about 12 | Device and browser are now recorded with each session |
 
-### Other commands
-
-```bash
-uv run python main.py demo                    # watch the best policy in the classroom renderer (needs a display)
-uv run python main.py train --algo dqn --quick  # short smoke-test training run
-uv run python main.py train --algo all        # rerun all four 12-run sweeps
-uv run python main.py compare                 # regenerate the comparison plots in logs/comparison/
-```
-
-## Designs and screenshots
-
-**API in Swagger UI.** `POST /step` sent with an empty body, so the trained policy picks the action:
-
-![Swagger UI: POST /step](api/screenshots/swagger_step.png)
-
-`POST /reset` and `GET /episode-summary`:
-
-![Swagger UI: POST /reset](api/screenshots/swagger_reset.png)
-![Swagger UI: GET /episode-summary](api/screenshots/swagger_episode_summary.png)
-
-**Classroom renderer.** A PyOpenGL view of an episode, used to watch what the policy does step by step:
-
-![Classroom renderer](assets/classroom_renderer.png)
-
-**Training results.** Reward curves for the best run of each algorithm, and held-out performance:
-
-![Convergence of the best run per algorithm](logs/comparison/best_run_convergence.png)
-![Held-out and edge-case results](logs/generalization/generalization_comparison.png)
-
-## Model and results
-
-The policy is a DQN with a 9 → 64 → 64 → 8 fully connected Q-network (ReLU, Adam, Huber loss, replay buffer, target network, ε-greedy exploration). The input is a 9-dimensional observation: a one-hot engagement state plus normalised response time, error rate, hint count, difficulty and time on task. The output is one Q-value for each of the 8 scaffolding actions.
-
-Each algorithm was trained with 12 hyperparameter configurations for 20,000 steps each.
-
-| Algorithm | Best run | Final mean training reward (best run) | Sweep mean ± std | Mean reward on 20 held-out seeds |
-|---|---|---|---|---|
-| DQN | `dqn_02` | 9.66 | 6.45 ± 2.14 | 8.50 |
-| PPO | `ppo_11` | 7.67 | 4.13 ± 2.65 | 8.41 |
-| A2C | `a2c_07` | 5.33 | 2.84 ± 1.77 | 5.94 |
-| REINFORCE | `reinforce_00` | 3.08 | 0.60 ± 1.54 | 3.88 |
-
-A uniform random policy scores 0.23 on the same held-out seeds and drops out in 15 of 20 episodes. DQN drops out in 3 of 20.
-
-Classification metrics such as accuracy and F1 do not apply to Stage 2, because there is no labelled "correct action" per step. The notebook explains the metrics used instead (mean episode reward, convergence, TD loss, held-out and edge-case evaluation, and a state-by-action table of the policy's decisions). Accuracy, precision, recall and F1 will be reported for the Stage 1 classifier.
-
-### Known limitations
-
-- **Simulation only.** The simulator's transition probabilities are set by hand from theory (flow theory, self-determination theory), not fitted to learner data.
-- **DQN and PPO are tied on held-out seeds.** DQN's lead is in training reward. Twenty held-out episodes cannot separate the two.
-- **`CONFUSED` is not handled with the confusion-specific actions.** `offer_hint` and `repeat_simplified` are the actions that directly reduce confusion in the simulator, and the trained policies do not pick them in that state. The state is rare and lightly penalised, and the simulator makes other actions about as effective at restoring engagement. A targeted reward fix was tried and reverted because it destabilised three of the four algorithms.
-- **Narrow action use.** The DQN policy relies on five of the eight actions.
-- **REINFORCE is not reproducible.** Its training loop resets the environment without a seed. DQN, PPO and A2C reproduce from their seeds.
-- **The API is a demo.** One in-memory session, no authentication, no database.
-
-## Deployment plan
-
-**Now (this milestone).** The API runs locally with `uvicorn` and is demonstrated through Swagger UI. The policy is loaded from `models/` at start-up and runs on CPU.
-
-**Next.**
-
-1. Containerise the API (Dockerfile running `uvicorn`, model weights baked into the image) and host it on a managed container service so the demo has a public URL.
-2. Replace the single global session with per-session state keyed by an anonymised session ID, and add an API key.
-3. Build the Stage 1 web UI: short mental-arithmetic and pattern tasks that log response time, errors, hint requests and time on task.
-4. Add an endpoint that accepts a telemetry window, runs the Stage 1 classifier, and returns the engagement-risk state with the Stage 2 action.
-5. Run the pilot only after ethics approval, with guardian consent and learner assent. No names or other personal identifiers are stored, only anonymised IDs.
-
-The Stage 2 policy stays frozen through all of this. Real telemetry is used to check whether its decisions are plausible, not to retrain it.
-
-## Project layout
+## Repository structure
 
 ```
-ModelNotebook.ipynb   Data visualisation, model architecture, performance metrics
-api/                  FastAPI app (app.py), endpoint docs, Swagger screenshots
-environment/
-  custom_env.py       AdaptLearn-v1: transition model, reward, observation and action spaces
-  rendering.py        PyOpenGL classroom renderer
-training/             DQN and policy-gradient sweeps, comparison and convergence plots
-tests/
-  test_*.py           Automated tests (spaces, transitions, reward, terminal conditions, reproducibility)
-  manual_*.py         Manual and visual diagnostic scripts
-  generalization_test.py, stability_analysis.py   Held-out evaluation and stability reruns
-models/               Trained weights for every run
-logs/                 Per-run monitor logs, summary CSVs, plots
-main.py               Entry point for train / compare / demo
+pilot/                  The app (backend in layers, frontend in web/)
+  core/                 Behavioural states, telemetry, the 40-question bank
+  labelling/            StateLabeler interface: RuleBasedLabeler (pilot), Stage1Labeler (trained)
+  policy/               DQNPolicy and the Shield that applies guardrail rules
+  adaptation/           CurriculumPlanner: action -> next question and support message
+  storage/              Database (with safe upgrades) and one repository per table
+  services/             Learning, session and observation use cases; ShadowMode and AdaptiveMode
+  api/                  Schemas, access keys, routes, create_app()
+  web/                  React + TypeScript screens (learner, observer, researcher)
+  data/                 Pilot database (git-ignored: never committed)
+environment/            AdaptLearn-v1 simulator (v1 and v2 rules)
+training/               DQN and policy-gradient sweeps, comparison plots
+analysis/               Pilot analysis: dataset building, Stage 1 training, Stage 1 -> DQN replay
+models/                 Trained policies (v1, v2) and the Stage 1 classifier
+logs/                   Training logs and evaluations (v1 in logs/dqn, logs/pg; v2 in logs/v2)
+tests/                  Unit and integration tests; performance/ and compatibility/ suites
+docs/testing/           Stress, compatibility and coverage results, screenshots
+ModelNotebook.ipynb     Stage 2 model notebook (MVP milestone)
+api/, main.py           Earlier milestone: JSON API demo and command-line entry point for training
 ```
 
-The design rationale for the environment, including every judgment call in the transition and reward model, is in the module docstring of [`environment/custom_env.py`](environment/custom_env.py).
+## Ethics and data
+
+The pilot was approved by the ALU Research Ethics Committee. Every learner had signed guardian consent and gave their own assent. No names are entered into the system: learners are known only by a participant code, and the link between codes and names was kept on paper and destroyed two weeks after the last session. The pilot database is git-ignored and stored only on the researcher's ALU Google Drive.
+
+During the pilot the DQN ran in **shadow mode**: every learner saw the same 15 questions, and the model's decisions were stored but never shown to learners or used to change what they saw. Adaptive mode has been demonstrated by the researcher only; using it with children would need a new ethics approval.
+
+## Deployment
+
+The app runs on the researcher's laptop and serves learners over the school's Wi-Fi (a phone hotspot or travel router is the fallback). No cloud service receives learner data. For wider use, the same server can run on a host with persistent storage (Render, Railway or Fly.io; Vercel's serverless functions cannot keep the SQLite file), with the database moved to PostgreSQL and each school given its own keys.
+
+## Known limitations
+
+- Pilot sample: 31 learners at one school, one session each; only 11 check-ins said "hard" or "lost".
+- Observations were too sparse to measure agreement between observers (no paired codes), so Stage 1 is trained on self-reports only.
+- The DQN still makes weak choices for on-task learners; the guardrails and the plausibility rating (pending) address and measure this.
+- REINFORCE results are not reproducible (unseeded environment resets in its training loop).
