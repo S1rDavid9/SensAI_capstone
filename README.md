@@ -99,7 +99,7 @@ uv run python -m tests.compatibility.browser_matrix    # full sessions in Chrome
 |---|---|---|
 | Unit and integration (pytest) | 77 tests, 96% of `pilot/` covered; includes a test that shadow-mode decisions never reach the learner | |
 | Stress (`docs/testing/load_test_results.md`) | 0 failed requests out of 32,000 at 10-100 simultaneous learners, both modes; at 30 learners with no thinking time, 95% of requests under 0.45 s | Fixed "database is locked" when several workers start; loaded the Stage 1 model at startup (removed a 2 s delay); SQLite WAL mode |
-| Compatibility (`docs/testing/compatibility_results.md`) | 7/7 browser and device targets pass full sessions; no JavaScript errors, no horizontal overflow | Raised learner buttons from 43 px to at least 48 px |
+| Compatibility and device performance (`docs/testing/compatibility_results.md`) | 8/8 browser and device targets pass full sessions, including a low-end phone emulated with a 6× slower CPU; 60 frames per second everywhere; no JavaScript errors, no horizontal overflow | Raised learner buttons from 43 px to at least 48 px |
 | Field test (the pilot) | 31 learners in batches of about 12, on school Chromebooks, iPhones (Safari and Chrome), an Android phone, iPads, and Mac and Windows laptops | Device and browser are now recorded with each session |
 
 ## Repository structure
