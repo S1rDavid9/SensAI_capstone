@@ -38,6 +38,7 @@ States describe what a learner is **observably doing**, not how they feel. SensA
 | Stage 1 (leave-one-learner-out) | Balanced accuracy **0.67** (chance 0.33); detects "needs support" with AUC **0.90**. Error rate carries almost all of the signal. Against the 24 adult observations it agreed only 5 times: self-report and observation seem to capture different things. |
 | Stage 2 on the real pilot data | Under-challenged → move on / challenge; needs support → simplified repeat, easier, encourage. On-task is the weak spot (the DQN wants to make it easier; the guardrail blocks it in 94 cases). |
 | Simulator v2 | The DQN no longer moves on when the learner is confused (69% → 0%); PPO, A2C and REINFORCE collapse to one or two actions, so DQN is the policy carried forward. |
+| DQN vs teacher rules | On 200 held-out simulated learners, the DQN with guardrails scores 7.02 with 10% dropout; a fixed rule per state scores 0.43 (60% dropout) and an errors-only staircase 0.24 (66%). Guardrails cut the DQN's dropout from 18% to 10%. Simulation only (`analysis/results/baseline_comparison.md`). |
 
 Full analysis: `analysis/results/stage1.json`, `analysis/results/stage2_pilot.json`, `logs/v2/evaluation.md`.
 

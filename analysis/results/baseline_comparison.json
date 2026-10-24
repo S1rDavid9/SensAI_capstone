@@ -1,0 +1,212 @@
+{
+  "seeds": "5000-5199",
+  "learners": 200,
+  "simulators": {
+    "v2": {
+      "Random": {
+        "mean_reward": -1.48,
+        "ci95": [
+          -2.05,
+          -0.92
+        ],
+        "dropout_rate": 0.835,
+        "success_rate": 0.0,
+        "engaged_share": 0.472,
+        "topics_completed": 2.6,
+        "top_action_by_state": {
+          "on_task": "add_encouragement",
+          "rushing": "advance_topic",
+          "struggling": "repeat_simplified",
+          "stuck": "introduce_challenge"
+        },
+        "vs_dqn_guardrails": {
+          "mean_difference": 8.5,
+          "wilcoxon_p": 1.9e-33
+        }
+      },
+      "Staircase (errors only)": {
+        "mean_reward": 0.24,
+        "ci95": [
+          -0.63,
+          1.11
+        ],
+        "dropout_rate": 0.655,
+        "success_rate": 0.005,
+        "engaged_share": 0.572,
+        "topics_completed": 11.7,
+        "top_action_by_state": {
+          "on_task": "increase_difficulty",
+          "rushing": "advance_topic",
+          "struggling": "decrease_difficulty",
+          "stuck": "decrease_difficulty"
+        },
+        "vs_dqn_guardrails": {
+          "mean_difference": 6.78,
+          "wilcoxon_p": 1.2e-26
+        }
+      },
+      "State rules": {
+        "mean_reward": 0.43,
+        "ci95": [
+          -0.38,
+          1.24
+        ],
+        "dropout_rate": 0.605,
+        "success_rate": 0.035,
+        "engaged_share": 0.504,
+        "topics_completed": 17.6,
+        "top_action_by_state": {
+          "on_task": "advance_topic",
+          "rushing": "introduce_challenge",
+          "struggling": "repeat_simplified",
+          "stuck": "offer_hint"
+        },
+        "vs_dqn_guardrails": {
+          "mean_difference": 6.58,
+          "wilcoxon_p": 6.7e-29
+        }
+      },
+      "DQN": {
+        "mean_reward": 6.67,
+        "ci95": [
+          6.16,
+          7.18
+        ],
+        "dropout_rate": 0.175,
+        "success_rate": 0.05,
+        "engaged_share": 0.816,
+        "topics_completed": 23.2,
+        "top_action_by_state": {
+          "on_task": "advance_topic",
+          "rushing": "advance_topic",
+          "struggling": "add_encouragement",
+          "stuck": "add_encouragement"
+        },
+        "vs_dqn_guardrails": {
+          "mean_difference": 0.35,
+          "wilcoxon_p": 0.26
+        }
+      },
+      "DQN + guardrails": {
+        "mean_reward": 7.02,
+        "ci95": [
+          6.56,
+          7.48
+        ],
+        "dropout_rate": 0.1,
+        "success_rate": 0.035,
+        "engaged_share": 0.869,
+        "topics_completed": 11.7,
+        "top_action_by_state": {
+          "on_task": "offer_hint",
+          "rushing": "introduce_challenge",
+          "struggling": "add_encouragement",
+          "stuck": "add_encouragement"
+        }
+      }
+    },
+    "v1": {
+      "Random": {
+        "mean_reward": -1.2,
+        "ci95": [
+          -1.83,
+          -0.56
+        ],
+        "dropout_rate": 0.83,
+        "success_rate": 0.0,
+        "engaged_share": 0.445,
+        "topics_completed": 2.6,
+        "top_action_by_state": {
+          "on_task": "advance_topic",
+          "rushing": "introduce_challenge",
+          "struggling": "repeat_simplified",
+          "stuck": "decrease_difficulty"
+        },
+        "vs_dqn_guardrails": {
+          "mean_difference": 8.22,
+          "wilcoxon_p": 1.7e-32
+        }
+      },
+      "Staircase (errors only)": {
+        "mean_reward": 0.8,
+        "ci95": [
+          -0.06,
+          1.67
+        ],
+        "dropout_rate": 0.655,
+        "success_rate": 0.005,
+        "engaged_share": 0.571,
+        "topics_completed": 11.7,
+        "top_action_by_state": {
+          "on_task": "increase_difficulty",
+          "rushing": "advance_topic",
+          "struggling": "decrease_difficulty",
+          "stuck": "decrease_difficulty"
+        },
+        "vs_dqn_guardrails": {
+          "mean_difference": 6.23,
+          "wilcoxon_p": 1.1e-24
+        }
+      },
+      "State rules": {
+        "mean_reward": 0.43,
+        "ci95": [
+          -0.38,
+          1.24
+        ],
+        "dropout_rate": 0.605,
+        "success_rate": 0.035,
+        "engaged_share": 0.504,
+        "topics_completed": 17.6,
+        "top_action_by_state": {
+          "on_task": "advance_topic",
+          "rushing": "introduce_challenge",
+          "struggling": "repeat_simplified",
+          "stuck": "offer_hint"
+        },
+        "vs_dqn_guardrails": {
+          "mean_difference": 6.59,
+          "wilcoxon_p": 6.2e-29
+        }
+      },
+      "DQN": {
+        "mean_reward": 8.07,
+        "ci95": [
+          7.55,
+          8.6
+        ],
+        "dropout_rate": 0.175,
+        "success_rate": 0.05,
+        "engaged_share": 0.816,
+        "topics_completed": 23.2,
+        "top_action_by_state": {
+          "on_task": "advance_topic",
+          "rushing": "advance_topic",
+          "struggling": "add_encouragement",
+          "stuck": "add_encouragement"
+        },
+        "vs_dqn_guardrails": {
+          "mean_difference": -1.04,
+          "wilcoxon_p": 3e-07
+        }
+      },
+      "DQN + guardrails": {
+        "mean_reward": 7.03,
+        "ci95": [
+          6.57,
+          7.49
+        ],
+        "dropout_rate": 0.1,
+        "success_rate": 0.035,
+        "engaged_share": 0.869,
+        "topics_completed": 11.7,
+        "top_action_by_state": {
+          "on_task": "offer_hint",
+          "rushing": "introduce_challenge",
+          "struggling": "add_encouragement",
+          "stuck": "add_encouragement"
+        }
+      }
+    }
+  }
+}
