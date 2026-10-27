@@ -2488,6 +2488,7 @@ analysis = [
     { name = "xgboost", version = "3.4.1", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.12'" },
 ]
 dev = [
+    { name = "httpx" },
     { name = "playwright" },
     { name = "pytest" },
     { name = "pytest-cov" },
@@ -2504,6 +2505,7 @@ requires-dist = [
     { name = "fastapi", specifier = ">=0.141.1" },
     { name = "glfw", specifier = ">=2.7.0" },
     { name = "gymnasium", specifier = ">=0.29.1" },
+    { name = "httpx", marker = "extra == 'dev'", specifier = ">=0.28.1" },
     { name = "ipykernel", marker = "extra == 'notebook'", specifier = ">=7.4.0" },
     { name = "matplotlib", specifier = ">=3.8.0" },
     { name = "nbconvert", marker = "extra == 'notebook'", specifier = ">=7.17.1" },
