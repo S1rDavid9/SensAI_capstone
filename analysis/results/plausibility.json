@@ -1,0 +1,87 @@
+{
+  "rated_items": 78,
+  "of": 78,
+  "moments": 60,
+  "moments_where_a_guardrail_changed_the_action": 18,
+  "dqn_alone": {
+    "n": 60,
+    "plausible_rate (rated 2 or 3)": 0.85,
+    "mean_rating": 2.52,
+    "counts": {
+      "1": 9,
+      "2": 11,
+      "3": 40
+    }
+  },
+  "dqn_with_guardrails": {
+    "n": 60,
+    "plausible_rate (rated 2 or 3)": 0.817,
+    "mean_rating": 2.48,
+    "counts": {
+      "1": 11,
+      "2": 9,
+      "3": 40
+    }
+  },
+  "by_state (dqn alone)": {
+    "on_task": {
+      "n": 20,
+      "plausible_rate (rated 2 or 3)": 0.6,
+      "mean_rating": 1.8,
+      "counts": {
+        "1": 8,
+        "2": 8,
+        "3": 4
+      }
+    },
+    "rushing": {
+      "n": 20,
+      "plausible_rate (rated 2 or 3)": 1.0,
+      "mean_rating": 3.0,
+      "counts": {
+        "3": 20
+      }
+    },
+    "struggling": {
+      "n": 20,
+      "plausible_rate (rated 2 or 3)": 0.95,
+      "mean_rating": 2.75,
+      "counts": {
+        "1": 1,
+        "2": 3,
+        "3": 16
+      }
+    }
+  },
+  "by_state (with guardrails)": {
+    "on_task": {
+      "n": 20,
+      "plausible_rate (rated 2 or 3)": 0.5,
+      "mean_rating": 1.7,
+      "counts": {
+        "1": 10,
+        "2": 6,
+        "3": 4
+      }
+    },
+    "rushing": {
+      "n": 20,
+      "plausible_rate (rated 2 or 3)": 1.0,
+      "mean_rating": 3.0,
+      "counts": {
+        "3": 20
+      }
+    },
+    "struggling": {
+      "n": 20,
+      "plausible_rate (rated 2 or 3)": 0.95,
+      "mean_rating": 2.75,
+      "counts": {
+        "1": 1,
+        "2": 3,
+        "3": 16
+      }
+    }
+  },
+  "note": "One rater (the researcher). Agreement with a second rater (weighted Cohen's kappa) needs the teacher's copy."
+}

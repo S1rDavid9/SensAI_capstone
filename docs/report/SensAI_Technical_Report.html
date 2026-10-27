@@ -4,9 +4,9 @@
 <meta charset="utf-8">
 <title>SensAI Technical Report</title>
 <style>
-  @page { size: A4; margin: 20mm 20mm 18mm 20mm; }
+  @page { size: A4; margin: 16mm 18mm 13mm 18mm; }
   * { box-sizing: border-box; }
-  body { font-family: "Times New Roman", Times, serif; font-size: 10.5pt; line-height: 1.35; color: #000; margin: 0; }
+  body { font-family: "Times New Roman", Times, serif; font-size: 10.2pt; line-height: 1.32; color: #000; margin: 0; }
   h1 { font-size: 15pt; margin: 0 0 2pt; text-align: center; }
   .subtitle { text-align: center; margin: 0 0 10pt; font-size: 10pt; }
   h2 { font-size: 11.5pt; margin: 10pt 0 4pt; }
@@ -22,7 +22,7 @@
   code { font-family: "Courier New", Courier, monospace; font-size: 8.6pt; }
   .figure { text-align: center; margin: 5pt 0 7pt; page-break-inside: avoid; }
   .caption { font-size: 9pt; font-style: italic; margin-top: 2pt; }
-  .refs p { padding-left: 18pt; text-indent: -18pt; font-size: 9.5pt; margin-bottom: 3pt; text-align: left; }
+  .refs p { padding-left: 18pt; text-indent: -18pt; font-size: 9pt; margin-bottom: 2pt; text-align: left; }
   .shots { display: flex; gap: 6pt; justify-content: center; align-items: flex-end; }
   .shots img { border: 0.5pt solid #000; }
 </style>
@@ -48,7 +48,7 @@
 <tr><td>Shadow mode (feedback)</td><td>Guarantee the DQN did not affect pilot learners</td><td class="ok">Completed</td><td>Decisions stored server-side only; verified by <code>test_shadow_mode_never_reaches_the_learner</code></td></tr>
 <tr><td>Guardrails (approved in office hour)</td><td>Block actions no teacher would choose</td><td class="ok">Completed (new)</td><td><code>Shield</code> with rule classes (<code>pilot/policy/shield.py</code>)</td></tr>
 <tr><td>Integrated web prototype (Objective 4)</td><td>Run the full telemetry → state → action loop</td><td class="ok">Completed</td><td>Adaptive mode (<code>pilot/services/modes.py</code>, <code>pilot/adaptation/</code>); demonstrated by the researcher, not used with children</td></tr>
-<tr><td>Decision plausibility (defined per feedback)</td><td>Two raters score DQN decisions 1–3; weighted kappa</td><td class="part">Partial</td><td>Blind sheet of 78 items from 60 real moments generated (<code>analysis/stage2_on_pilot.py</code>); ratings pending</td></tr>
+<tr><td>Decision plausibility (defined per feedback)</td><td>Raters score DQN decisions 1–3; weighted kappa between two raters</td><td class="ok">Completed (one rater)</td><td>78 blind items from 60 real moments, rated by the researcher (<code>analysis/rating_sheet.py</code>, <code>analysis/results/plausibility.json</code>). The class teacher's ratings, needed for the agreement statistic, are the next step</td></tr>
 <tr><td>Data layer: four tables (text) vs five / six (diagrams)</td><td>Store sessions, telemetry, labels, decisions</td><td class="ok">Completed, reconciled</td><td>Six tables: sessions, answers, events, check-ins, observations, decisions (<code>pilot/storage/</code>). SQLite, the proposal's option for a small pilot</td></tr>
 <tr><td>Docker deployment (proposal 3.4)</td><td>Reproducible deployment</td><td class="no">Not implemented</td><td>Replaced by a locked <code>uv</code> environment and a local-network server: the school network could not be relied on, and no cloud service may receive learner data under the ethics approval</td></tr>
 </table>
@@ -94,7 +94,7 @@
 <li><b>Curriculum planner</b>: each action maps to a target level and a question-type rule; the planner searches levels outward from the target (target, ±1, ±2), prefers the requested type, never repeats a question, and rewrites the message when the bank cannot move as intended (for example "easier" at level 1).</li>
 </ul>
 
-<h2 style="page-break-before: always">4. Testing, validation and performance</h2>
+<h2>4. Testing, validation and performance</h2>
 <table>
 <tr><th style="width:15%">Approach</th><th style="width:22%">Why chosen</th><th style="width:30%">How conducted and results</th><th>Improvements made afterwards</th></tr>
 <tr><td>Unit and integration (pytest)</td><td>Each class has one job, so it can be tested alone; the API must behave correctly end to end in both modes</td><td>77 tests; 96% of <code>pilot/</code> statements covered. Cover the question bank, both labellers, every guardrail rule, the planner, database upgrades (including six processes starting at once), consent rules, access keys, invalid inputs (wrong code, wrong question, negative time, unknown event, early finish → 400/403/404/409/422) and full sessions in both modes</td><td>Planner message corrected when difficulty cannot change; shadow-mode test added at the supervisor's request</td></tr>
@@ -104,15 +104,15 @@
 </table>
 <div class="figure">
 <div class="shots">
-  <img src="../testing/compatibility/safari-engine-iphone-13-question.jpg" height="150" alt="">
-  <img src="../testing/compatibility/chrome-pixel-7-observer.jpg" height="150" alt="">
-  <img src="../testing/compatibility/safari-engine-ipad-gen-7-welcome.jpg" height="150" alt="">
-  <img src="../testing/compatibility/chrome-1366x768-done.jpg" height="150" alt="">
+  <img src="../testing/compatibility/safari-engine-iphone-13-question.jpg" height="118" alt="">
+  <img src="../testing/compatibility/chrome-pixel-7-observer.jpg" height="118" alt="">
+  <img src="../testing/compatibility/safari-engine-ipad-gen-7-welcome.jpg" height="118" alt="">
+  <img src="../testing/compatibility/chrome-1366x768-done.jpg" height="118" alt="">
 </div>
 <div class="caption">Figure 2. Screenshots from the compatibility run: adaptive support on an iPhone (WebKit), the observer screen on an Android phone (Chrome), the welcome screen on an iPad, and the finish screen on a Chromebook-sized window.</div>
 </div>
 <h3>Validation results on the pilot data</h3>
-<p><b>Signals vs labels.</b> Error rate in the five questions before a check-in separated "hard/lost" from other answers by 1.46 standard deviations within the same block (p = 0.0001). Response time alone did not, because the two struggling answers behaved oppositely: "hard" was slow (median 69 s), "lost" was fast with 74% errors, consistent with rapid guessing (Wise &amp; Kong, 2005). <b>Stage 1</b> (leave-one-learner-out, 92 labelled blocks): balanced accuracy 0.67 against 0.33 for the majority baseline; AUC 0.90 for "needs support". Adding more features lowered accuracy (all seven: 0.58; shallow XGBoost: 0.47), so the deployed model uses error rate and response time only. <b>Stage 1 vs adult observation:</b> matching each of the 24 observer codes to the question the learner was working on, Stage 1 agreed in only 5 (21%); observers saw struggling or stuck 15 times, and Stage 1 mostly said on task or rushing. Self-report and adult observation appear to capture different things, and Stage 1 judges a five-answer window while an observation is a single moment; with 24 codes from 12 learners this is a warning sign rather than a firm result, and it is the main validity question for the next phase. <b>Stage 1 → DQN on the 463 real answers</b>: under-challenged → move on (76%) or challenge (20%); needs support → simplified repeat (52%), easier (29%), encourage (19%); on task → the DQN chose "easier" 70% of the time, which the guardrail blocked (21.8% of all decisions shielded). On-task behaviour is the policy's known weak spot.</p>
+<p><b>Signals vs labels.</b> Error rate in the five questions before a check-in separated "hard/lost" from other answers by 1.46 standard deviations within the same block (p = 0.0001). Response time alone did not, because the two struggling answers behaved oppositely: "hard" was slow (median 69 s), "lost" was fast with 74% errors, consistent with rapid guessing (Wise &amp; Kong, 2005). <b>Stage 1</b> (leave-one-learner-out, 92 labelled blocks): balanced accuracy 0.67 against 0.33 for the majority baseline; AUC 0.90 for "needs support". Adding more features lowered accuracy (all seven: 0.58; shallow XGBoost: 0.47), so the deployed model uses error rate and response time only. <b>Stage 1 vs adult observation:</b> matching each of the 24 observer codes to the question the learner was working on, Stage 1 agreed in only 5 (21%); observers saw struggling or stuck 15 times, and Stage 1 mostly said on task or rushing. Self-report and adult observation appear to capture different things, and Stage 1 judges a five-answer window while an observation is a single moment; with 24 codes from 12 learners this is a warning sign rather than a firm result, and it is the main validity question for the next phase. <b>Stage 1 → DQN on the 463 real answers</b>: under-challenged → move on (76%) or challenge (20%); needs support → simplified repeat (52%), easier (29%), encourage (19%); on task → the DQN chose "easier" 70% of the time, which the guardrail blocked (21.8% of all decisions shielded). On-task behaviour is the policy's known weak spot. <b>Decision plausibility</b> (60 real moments, rated blind by the researcher): 85% of the DQN's decisions were rated acceptable or better (mean 2.52 of 3): 100% for under-challenged learners, 95% for learners needing support, but only 60% for learners on task. All 18 guardrail interventions were "make it easier" for an on-task learner; the replacement (usually a hint) was rated the same in 12, better in 2 and worse in 4, so with guardrails the rate was 82%. The guardrail blocks the bad choice, but the policy's next-best action is not a good fallback for a coping learner; a better on-task fallback is the next fix. One rater, who also built the system, and 60 moments: a second rater is needed before relying on these figures.</p>
 
 <h2>5. Code quality and OOP practice</h2>
 <ul>
@@ -123,7 +123,7 @@
 </ul>
 
 <h2>6. Ethics, limitations and next steps</h2>
-<p>The pilot ran under ALU Research Ethics Committee approval with guardian consent and learner assent; learners are known only by codes, and no cloud service receives their data. <b>During the pilot the DQN never affected learners:</b> everyone saw the same 15 questions and the policy's decisions were only stored. Adaptive mode is demonstrated by the researcher; using it with children needs a new approval. Limitations: one school and one session per learner; only 11 "hard"/"lost" check-ins; observations too sparse for inter-rater agreement, and Stage 1 agreed with observers in only 5 of 24 moments; more learners than the approved 10–20 (a deviation from the approved protocol); plausibility ratings still pending; and REINFORCE results are not reproducible. Next: rate the plausibility sheet with the class teacher, run a smaller observation session for paired codes, and seek approval to evaluate adaptive mode with learners.</p>
+<p>The pilot ran under ALU Research Ethics Committee approval with guardian consent and learner assent; learners are known only by codes, and no cloud service receives their data. <b>During the pilot the DQN never affected learners:</b> everyone saw the same 15 questions and the policy's decisions were only stored. Adaptive mode is demonstrated by the researcher; using it with children needs a new approval. Limitations: one school and one session per learner; only 11 "hard"/"lost" check-ins; observations too sparse for inter-rater agreement, and Stage 1 agreed with observers in only 5 of 24 moments; more learners than the approved 10–20 (a deviation from the approved protocol); plausibility rated by one rater only; and REINFORCE results are not reproducible. Next: a second plausibility rating by the class teacher (for weighted kappa), a better on-task fallback in the guardrails, run a smaller observation session for paired codes, and seek approval to evaluate adaptive mode with learners.</p>
 
 <h2>References</h2>
 <div class="refs">

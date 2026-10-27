@@ -37,6 +37,7 @@ States describe what a learner is **observably doing**, not how they feel. SensA
 | Pilot | 31 learners started, 30 completed all 15 questions; 463 answers, 94 check-ins |
 | Stage 1 (leave-one-learner-out) | Balanced accuracy **0.67** (chance 0.33); detects "needs support" with AUC **0.90**. Error rate carries almost all of the signal. Against the 24 adult observations it agreed only 5 times: self-report and observation seem to capture different things. |
 | Stage 2 on the real pilot data | Under-challenged → move on / challenge; needs support → simplified repeat, easier, encourage. On-task is the weak spot (the DQN wants to make it easier; the guardrail blocks it in 94 cases). |
+| Decision plausibility (60 real moments, rated blind by the researcher) | 85% of the DQN's decisions rated acceptable or better: 100% when the learner found it easy, 95% when they needed support, 60% when on task. The guardrails' replacement for on-task learners was rated no better (82% overall with guardrails). One rater; the teacher's ratings come next. |
 | Simulator v2 | The DQN no longer moves on when the learner is confused (69% → 0%); PPO, A2C and REINFORCE collapse to one or two actions, so DQN is the policy carried forward. |
 | DQN vs teacher rules | On 200 held-out simulated learners, the DQN with guardrails scores 7.02 with 10% dropout; a fixed rule per state scores 0.43 (60% dropout) and an errors-only staircase 0.24 (66%). Guardrails cut the DQN's dropout from 18% to 10%. Simulation only (`analysis/results/baseline_comparison.md`). |
 
@@ -140,5 +141,5 @@ The app runs on the researcher's laptop and serves learners over the school's Wi
 
 - Pilot sample: 31 learners at one school, one session each; only 11 check-ins said "hard" or "lost".
 - Observations were too sparse to measure agreement between observers (no paired codes), so Stage 1 is trained on self-reports only.
-- The DQN still makes weak choices for on-task learners; the guardrails and the plausibility rating (pending) address and measure this.
+- The DQN still makes weak choices for on-task learners. The guardrails block "make it easier", but their fallback (usually a hint) was rated no better, so a better on-task fallback is the next fix. Plausibility has one rater so far.
 - REINFORCE results are not reproducible (unseeded environment resets in its training loop).
