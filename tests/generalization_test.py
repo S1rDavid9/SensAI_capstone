@@ -38,10 +38,10 @@ import numpy as np
 from stable_baselines3 import A2C, DQN, PPO
 
 from environment.custom_env import (
-    ACTION_DECREASE_DIFFICULTY,
-    ACTION_INCREASE_DIFFICULTY,
     ACTION_ADD_ENCOURAGEMENT,
     ACTION_ADVANCE_TOPIC,
+    ACTION_DECREASE_DIFFICULTY,
+    ACTION_INCREASE_DIFFICULTY,
     ACTION_INTRODUCE_CHALLENGE,
     ACTION_NAMES,
     ACTION_OFFER_HINT,
@@ -140,7 +140,7 @@ def part1_held_out_eval() -> dict[str, dict[str, Any]]:
         rewards = []
         outcomes: Counter[str] = Counter()
         for seed in HELD_OUT_SEEDS:
-            total_reward, steps, outcome, _ = run_episode(model, env, seed)
+            total_reward, _steps, outcome, _ = run_episode(model, env, seed)
             rewards.append(total_reward)
             outcomes[outcome] += 1
 
@@ -267,7 +267,7 @@ def part2_edge_case_stress_test() -> dict[str, dict[str, Any]]:
             rewards, outcomes, first_actions, first_action_sensible = [], Counter(), [], []
 
             for seed in CONDITION_SEEDS:
-                total_reward, steps, outcome, transitions = run_episode(model, env, seed)
+                total_reward, _steps, outcome, transitions = run_episode(model, env, seed)
                 rewards.append(total_reward)
                 outcomes[outcome] += 1
                 first_action = transitions[0][1] if transitions else None

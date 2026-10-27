@@ -65,7 +65,7 @@ def main() -> None:
     action_trajectories: list[list[int]] = []
 
     for ep in range(N_EPISODES):
-        obs, info = env.reset(seed=ep)
+        obs, _ = env.reset(seed=ep)
         terminated = truncated = False
         action_history: list[int] = []
         difficulty_history: list[int] = [env.difficulty]
@@ -91,7 +91,7 @@ def main() -> None:
                 preceded_by_recent_advance.append(last_advance_idx is not None)
                 steps_since_last_advance.append(last_advance_idx)
 
-            obs, reward, terminated, truncated, info = env.step(action)
+            obs, _reward, terminated, truncated, _info = env.step(action)
             action_history.append(action)
             difficulty_history.append(env.difficulty)
 

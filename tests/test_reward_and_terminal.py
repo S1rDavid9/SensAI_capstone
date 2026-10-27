@@ -164,7 +164,7 @@ def test_confused_does_not_count_toward_dropout_streak(env: AdaptLearnEnv) -> No
     assert env.consecutive_disengaged == 2
 
     env.np_random.forced_index = int(EngagementState.CONFUSED)
-    _, _, terminated, _, info = env.step(4)
+    _, _, terminated, _, _ = env.step(4)
     assert terminated is False
     assert env.consecutive_disengaged == 0
 
@@ -286,12 +286,22 @@ def test_progression_beats_camping_in_expected_value() -> None:
 # Simulator v2 (design decision 12)
 # --------------------------------------------------------------------------
 
-from environment.custom_env import (  # noqa: E402
+from environment.custom_env import (
     ACTION_ADVANCE_TOPIC as _ADV,
+)
+from environment.custom_env import (
     ACTION_DECREASE_DIFFICULTY as _DEC,
+)
+from environment.custom_env import (
     AdaptLearnEnv as _Env,
+)
+from environment.custom_env import (
     EngagementState as _S,
+)
+from environment.custom_env import (
     RewardConfig as _RC,
+)
+from environment.custom_env import (
     TransitionConfig as _TC,
 )
 

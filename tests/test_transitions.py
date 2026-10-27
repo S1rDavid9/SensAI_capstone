@@ -18,8 +18,8 @@ from environment.custom_env import (
     ACTION_CHANGE_TASK_TYPE,
     ACTION_INTRODUCE_CHALLENGE,
     ACTION_OFFER_HINT,
-    EngagementState,
     AdaptLearnEnv,
+    EngagementState,
     _softmax,
 )
 

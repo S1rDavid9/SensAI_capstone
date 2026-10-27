@@ -53,3 +53,12 @@ testpaths = ["tests"]
 
 [tool.ruff]
 line-length = 100
+
+[tool.ruff.lint]
+# Hyperparameter grids and configs are written as dict(lr=..., gamma=...): keyword
+# calls read better than string-keyed literals there.
+ignore = ["C408"]
+
+[tool.ruff.lint.per-file-ignores]
+# FastAPI reads request bodies from default arguments.
+"api/app.py" = ["B008"]

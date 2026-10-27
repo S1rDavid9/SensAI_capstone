@@ -163,7 +163,7 @@ async def learner(client: httpx.AsyncClient, url: str, code: str, timings: dict,
 
 def pct(values: list[float], p: float) -> float:
     values = sorted(values)
-    return values[min(len(values) - 1, int(round(p / 100 * (len(values) - 1))))]
+    return values[min(len(values) - 1, round(p / 100 * (len(values) - 1)))]
 
 
 async def run_level(n: int, mode: str, workers: int = 1) -> dict:

@@ -16,6 +16,7 @@ Run:
 from __future__ import annotations
 
 import json
+from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
 
@@ -70,6 +71,7 @@ def _get_model(algo: str):
     return _model_cache[algo]
 
 
+@dataclass
 class _Session:
     """Single global in-memory session -- no multi-user handling, by
     design (see module docstring: this is a serialization demo, not a
@@ -78,7 +80,7 @@ class _Session:
     env: AdaptLearnEnv | None = None
     model: Any = None
     algo: str | None = None
-    history: list[dict] = []
+    history: list[dict] = field(default_factory=list)
     last_obs: Any = None
     done: bool = False
 

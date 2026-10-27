@@ -9,8 +9,6 @@ works *before* any time is spent on the PyOpenGL rendering layer. Run with:
 
 from __future__ import annotations
 
-import numpy as np
-
 from environment.custom_env import ACTION_NAMES, AdaptLearnEnv
 
 

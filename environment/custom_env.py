@@ -143,7 +143,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from enum import IntEnum
-from typing import Any
+from typing import Any, ClassVar
 
 import gymnasium as gym
 import numpy as np
@@ -278,7 +278,7 @@ class TransitionConfig:
     confusion_advance_penalty: float = 0.0
 
     @classmethod
-    def v2(cls) -> "TransitionConfig":
+    def v2(cls) -> TransitionConfig:
         return cls(confusion_advance_penalty=1.5)
 
 
@@ -352,7 +352,7 @@ class RewardConfig:
     no_bonus_when_confused: bool = False
 
     @classmethod
-    def v2(cls) -> "RewardConfig":
+    def v2(cls) -> RewardConfig:
         return cls(bonus_requires_no_lowering=True, no_bonus_when_confused=True)
 
 
@@ -402,7 +402,7 @@ class AdaptLearnEnv(gym.Env):
     # same deterministic action/state sequence but holds after each step's
     # action-cue+mood animation until a spacebar press, instead of a fixed
     # duration -- intended for recording, see rendering.py's render().
-    metadata = {"render_modes": ["human", "human_manual", "rgb_array"], "render_fps": 30}
+    metadata: ClassVar[dict] = {"render_modes": ["human", "human_manual", "rgb_array"], "render_fps": 30}
 
     def __init__(
         self,

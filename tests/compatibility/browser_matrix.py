@@ -144,7 +144,7 @@ def run_target(p, url: str, t: Target) -> dict:
         result["answer_to_feedback_ms_median"] = round(sorted(feedback_ms)[len(feedback_ms) // 2])
         result["session_seconds"] = round(time.perf_counter() - start, 1)
         result["passed"] = True
-    except Exception as e:   # record the failure and keep testing the other targets
+    except Exception as e:  # noqa: BLE001 -- record the failure and keep testing the other targets
         result["failure"] = f"{type(e).__name__}: {str(e).splitlines()[0][:160]}"
         page.screenshot(path=SHOTS / f"{slug}-failure.jpg")
     result["js_errors"] = errors[:5]

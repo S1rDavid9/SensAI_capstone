@@ -4,7 +4,14 @@ from fastapi import APIRouter, Depends
 from fastapi.responses import StreamingResponse
 
 from pilot.api.schemas import (
-    AnswerIn, CheckinIn, HintRequest, Join, LearnerAuth, LearnerEvent, NewSession, Observation,
+    AnswerIn,
+    CheckinIn,
+    HintRequest,
+    Join,
+    LearnerAuth,
+    LearnerEvent,
+    NewSession,
+    Observation,
 )
 from pilot.api.security import KeyGuard
 from pilot.core.states import OBSERVER_CODES, BehaviouralState

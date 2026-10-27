@@ -8,8 +8,21 @@ policy's own choice and the shielded one are returned.
 
 from pilot.policy.dqn import ActionScorer, DQNPolicy
 from pilot.policy.shield import (
-    DEFAULT_RULES, Decision, DifficultyBoundsRule, GuardrailRule, Shield, StateRule,
+    DEFAULT_RULES,
+    Decision,
+    DifficultyBoundsRule,
+    GuardrailRule,
+    Shield,
+    StateRule,
 )
 
-__all__ = ["ActionScorer", "DQNPolicy", "Decision", "GuardrailRule", "StateRule",
-           "DifficultyBoundsRule", "Shield", "DEFAULT_RULES"]
+__all__ = [
+    "DEFAULT_RULES",
+    "ActionScorer",
+    "DQNPolicy",
+    "Decision",
+    "DifficultyBoundsRule",
+    "GuardrailRule",
+    "Shield",
+    "StateRule",
+]

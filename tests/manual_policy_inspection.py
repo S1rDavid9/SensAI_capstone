@@ -121,7 +121,7 @@ def print_overall_action_frequency(transition_log: list[tuple[str, int]]) -> Non
         share = count / total if total else 0.0
         marker = ""
         if share >= DOMINANCE_FLAG_THRESHOLD:
-            marker = "  <-- FLAG: used in >= {:.0f}% of all steps".format(DOMINANCE_FLAG_THRESHOLD * 100)
+            marker = f"  <-- FLAG: used in >= {DOMINANCE_FLAG_THRESHOLD * 100:.0f}% of all steps"
             flagged.append((ACTION_NAMES[a], share))
         print(f"  {ACTION_NAMES[a]:<20s} {count:4d}  ({100 * share:5.1f}%){marker}")
 

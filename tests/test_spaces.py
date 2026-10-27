@@ -35,7 +35,7 @@ def test_observation_space_shape_dtype(env: AdaptLearnEnv) -> None:
 
 def test_reset_observation_in_space(env: AdaptLearnEnv) -> None:
     for seed in range(20):
-        obs, info = env.reset(seed=seed)
+        obs, _ = env.reset(seed=seed)
         assert env.observation_space.contains(obs), f"seed={seed}: {obs}"
         assert obs.dtype == np.float32
 
@@ -43,7 +43,7 @@ def test_reset_observation_in_space(env: AdaptLearnEnv) -> None:
 def test_step_observations_always_in_space(env: AdaptLearnEnv) -> None:
     obs, _ = env.reset(seed=0)
     for _ in range(200):
-        obs, reward, terminated, truncated, info = env.step(env.action_space.sample())
+        obs, reward, terminated, truncated, _ = env.step(env.action_space.sample())
         assert env.observation_space.contains(obs)
         assert isinstance(reward, float)
         if terminated or truncated:

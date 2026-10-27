@@ -157,8 +157,8 @@ def score(path: Path = XLSX) -> dict:
                 "mean_rating": round(float(v.mean()), 2), "counts": {int(k): int(c) for k, c in v.value_counts().sort_index().items()}}
 
     result = {
-        "rated_items": int(len(rated)), "of": int(len(df)),
-        "moments": int(len(m)), "moments_where_a_guardrail_changed_the_action": int(m.guardrail_used.sum()),
+        "rated_items": len(rated), "of": len(df),
+        "moments": len(m), "moments_where_a_guardrail_changed_the_action": int(m.guardrail_used.sum()),
         "dqn_alone": summary(dqn.dqn_alone),
         "dqn_with_guardrails": summary(with_guardrails),
         "by_state (dqn alone)": {s: summary(g.dqn_alone) for s, g in dqn.groupby("state")},

@@ -100,7 +100,7 @@ def main() -> None:
     results = {}
     run_id, path = best_model_path("dqn", "v1")
     v1_dqn = load("dqn", path)
-    v1_fn = lambda o: int(v1_dqn.predict(o, deterministic=True)[0])  # noqa: E731
+    v1_fn = lambda o: int(v1_dqn.predict(o, deterministic=True)[0])
     results[f"DQN v1 ({run_id}) on v1"] = evaluate(v1_fn, "v1")
     results[f"DQN v1 ({run_id}) on v2"] = evaluate(v1_fn, "v2")
 

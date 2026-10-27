@@ -74,7 +74,7 @@ import time
 from dataclasses import dataclass
 
 import glfw
-from OpenGL.GL import *  # noqa: F403 -- standard practice for immediate-mode PyOpenGL code
+from OpenGL.GL import *
 
 from environment.custom_env import (
     ACTION_ADD_ENCOURAGEMENT,

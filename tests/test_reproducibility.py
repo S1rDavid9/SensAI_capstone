@@ -21,7 +21,7 @@ _ACTION_SEQUENCE = [i % 8 for i in range(50)]
 
 def _run_trajectory(seed: int) -> list[tuple]:
     env = AdaptLearnEnv()
-    obs, info = env.reset(seed=seed)
+    obs, _info = env.reset(seed=seed)
     trace = [(tuple(obs.tolist()), None, None, None)]
     for action in _ACTION_SEQUENCE:
         obs, reward, terminated, truncated, _ = env.step(action)

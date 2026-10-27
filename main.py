@@ -52,7 +52,9 @@ def _load_best_run(algo: str) -> dict:
 def _load_model(algo: str, model_path: str):
     if algo in ALGO_CLASSES:
         return ALGO_CLASSES[algo].load(model_path)
-    from training.pg_training import REINFORCE  # local import: keeps torch-only REINFORCE off the default import path
+    from training.pg_training import (
+        REINFORCE,  # local import: keeps torch-only REINFORCE off the default import path
+    )
 
     return REINFORCE.load(model_path)
 

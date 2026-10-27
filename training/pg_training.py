@@ -38,8 +38,8 @@ from typing import Any
 
 import numpy as np
 import torch
-import torch.nn as nn
 from stable_baselines3 import A2C, PPO
+from torch import nn
 from torch.distributions import Categorical
 from tqdm import tqdm
 
@@ -152,7 +152,7 @@ class REINFORCE:
                 action = int(Categorical(logits=logits).sample().item())
         return action, None
 
-    def learn(self, total_timesteps: int) -> "REINFORCE":
+    def learn(self, total_timesteps: int) -> REINFORCE:
         steps_done = 0
         while steps_done < total_timesteps:
             batch_log_probs: list[torch.Tensor] = []
@@ -217,7 +217,7 @@ class REINFORCE:
         )
 
     @classmethod
-    def load(cls, path, env=None) -> "REINFORCE":
+    def load(cls, path, env=None) -> REINFORCE:
         checkpoint = torch.load(path, map_location="cpu", weights_only=False)
         obj = cls.__new__(cls)
         obj.env = env

@@ -10,4 +10,4 @@ from pilot.labelling.base import StateLabeler
 from pilot.labelling.rules import RuleBasedLabeler
 from pilot.labelling.stage1 import Stage1Labeler
 
-__all__ = ["StateLabeler", "RuleBasedLabeler", "Stage1Labeler"]
+__all__ = ["RuleBasedLabeler", "Stage1Labeler", "StateLabeler"]
