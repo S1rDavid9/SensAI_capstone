@@ -10,7 +10,7 @@ After every answer it runs a two-stage loop:
 
 States describe what a learner is **observably doing**, not how they feel. SensAI does not claim to detect emotions.
 
-- **Walkthrough video:** _link to be added_
+- **Walkthrough video:** https://youtu.be/7H3JrJ6SkBk
 - **Technical report (PDF):** [docs/report/SensAI_Technical_Report.pdf](docs/report/SensAI_Technical_Report.pdf)
 - **Repository:** https://github.com/S1rDavid9/SensAI_capstone
 
