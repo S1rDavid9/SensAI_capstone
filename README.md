@@ -36,7 +36,7 @@ States describe what a learner is **observably doing**, not how they feel. SensA
 |---|---|
 | Pilot | 31 learners started, 30 completed all 15 questions; 463 answers, 94 check-ins |
 | Stage 1 (leave-one-learner-out) | Balanced accuracy **0.67** (chance 0.33); detects "needs support" with AUC **0.90**. Error rate carries almost all of the signal. Against the 24 adult observations it agreed only 5 times: self-report and observation seem to capture different things. |
-| Stage 2 on the real pilot data | Under-challenged → move on / challenge; needs support → simplified repeat, easier, encourage. On-task is the weak spot (the DQN wants to make it easier; the guardrail blocks it in 94 cases). |
+| Stage 2 on the real pilot data | Under-challenged → move on / challenge; needs support → simplified repeat, easier, encourage. On-task is the weak spot (the DQN wants to make it easier; the guardrail blocks it in 98 cases). |
 | Decision plausibility (60 real moments, rated blind by the researcher) | 85% of the DQN's decisions rated acceptable or better: 100% when the learner found it easy, 95% when they needed support, 60% when on task. The guardrails' replacement for on-task learners was rated no better (82% overall with guardrails). One rater; the teacher's ratings come next. |
 | Simulator v2 | The DQN no longer moves on when the learner is confused (69% → 0%); PPO, A2C and REINFORCE collapse to one or two actions, so DQN is the policy carried forward. |
 | DQN vs teacher rules | On 200 held-out simulated learners, the DQN with guardrails scores 7.02 with 10% dropout; a fixed rule per state scores 0.43 (60% dropout) and an errors-only staircase 0.24 (66%). Guardrails cut the DQN's dropout from 18% to 10%. Simulation only (`analysis/results/baseline_comparison.md`). |
@@ -94,11 +94,12 @@ uv run pytest                                          # 77 unit and integration
 uv run pytest --cov=pilot                              # coverage (app code: 96%)
 uv run python -m tests.performance.load_test           # stress test: 10-100 learners at once
 uv run python -m tests.compatibility.browser_matrix    # full sessions in Chrome, WebKit and Firefox
+uv run ruff check .                                    # lint (passes clean)
 ```
 
 | Approach | Result | Improvements made from it |
 |---|---|---|
-| Unit and integration (pytest) | 77 tests, 96% of `pilot/` covered; includes a test that shadow-mode decisions never reach the learner | |
+| Unit and integration (pytest) | 77 tests, 96% of `pilot/` covered; includes a test that shadow-mode decisions never reach the learner | Fixed the planner's message when difficulty cannot change (e.g. "easier" at level 1); added the shadow-mode test at the supervisor's request |
 | Stress (`docs/testing/load_test_results.md`) | 0 failed requests out of 32,000 at 10-100 simultaneous learners, both modes; at 30 learners with no thinking time, 95% of requests under 0.45 s | Fixed "database is locked" when several workers start; loaded the Stage 1 model at startup (removed a 2 s delay); SQLite WAL mode |
 | Compatibility and device performance (`docs/testing/compatibility_results.md`) | 8/8 browser and device targets pass full sessions, including a low-end phone emulated with a 6× slower CPU; 60 frames per second everywhere; no JavaScript errors, no horizontal overflow | Raised learner buttons from 43 px to at least 48 px |
 | Field test (the pilot) | 31 learners in batches of about 12, on school Chromebooks, iPhones (Safari and Chrome), an Android phone, iPads, and Mac and Windows laptops | Device and browser are now recorded with each session |
@@ -123,6 +124,7 @@ models/                 Trained policies (v1, v2) and the Stage 1 classifier
 logs/                   Training logs and evaluations (v1 in logs/dqn, logs/pg; v2 in logs/v2)
 tests/                  Unit and integration tests; performance/ and compatibility/ suites
 docs/testing/           Stress, compatibility and coverage results, screenshots
+docs/report/            Technical report (PDF and its HTML source)
 ModelNotebook.ipynb     Stage 2 model notebook (MVP milestone)
 api/, main.py           Earlier milestone: JSON API demo and command-line entry point for training
 ```
