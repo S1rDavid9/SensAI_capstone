@@ -1,9 +1,5 @@
 Name                            Stmts   Miss  Cover
 ---------------------------------------------------
-analysis/__init__.py                0      0   100%
-analysis/dataset.py                49     49     0%
-analysis/stage1.py                 81     81     0%
-analysis/stage2_on_pilot.py        74     74     0%
 pilot/__init__.py                   0      0   100%
 pilot/adaptation/__init__.py       54      1    98%
 pilot/api/__init__.py               2      0   100%
@@ -26,7 +22,7 @@ pilot/policy/shield.py             60      0   100%
 pilot/server.py                     2      2     0%
 pilot/services/__init__.py          0      0   100%
 pilot/services/errors.py           10      0   100%
-pilot/services/learning.py        109      4    96%
+pilot/services/learning.py        116      4    97%
 pilot/services/modes.py            38      0   100%
 pilot/services/observation.py      18      1    94%
 pilot/services/sessions.py         52      9    83%
@@ -34,4 +30,4 @@ pilot/storage/__init__.py           3      0   100%
 pilot/storage/database.py          44      3    93%
 pilot/storage/repositories.py      93      6    94%
 ---------------------------------------------------
-TOTAL                            1086    241    78%
+TOTAL                             889     37    96%

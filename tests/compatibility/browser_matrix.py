@@ -81,7 +81,7 @@ def layout_checks(page: Page) -> dict:
         const overflow = document.documentElement.scrollWidth - window.innerWidth;
         const sizes = [...document.querySelectorAll('button, input')]
             .filter(e => e.offsetParent !== null)
-            .map(e => { const r = e.getBoundingClientRect(); return Math.min(r.width, r.height); });
+            .map(e => Math.min(e.offsetWidth, e.offsetHeight));   // layout size: unaffected by animations
         return { horizontal_overflow_px: Math.max(0, overflow), smallest_tap_target_px: Math.round(Math.min(...sizes)) };
     }""")
 
