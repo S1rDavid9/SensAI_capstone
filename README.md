@@ -100,7 +100,7 @@ uv run ruff check .                                    # lint (passes clean)
 | Approach | Result | Improvements made from it |
 |---|---|---|
 | Unit and integration (pytest) | 77 tests, 96% of `pilot/` covered; includes a test that shadow-mode decisions never reach the learner | Fixed the planner's message when difficulty cannot change (e.g. "easier" at level 1); added the shadow-mode test at the supervisor's request |
-| Stress (`docs/testing/load_test_results.md`) | 0 failed requests out of 32,000 at 10-100 simultaneous learners, both modes; at 30 learners with no thinking time, 95% of requests under 0.45 s | Fixed "database is locked" when several workers start; loaded the Stage 1 model at startup (removed a 2 s delay); SQLite WAL mode |
+| Stress (`docs/testing/load_test_results.md`) | 0 failed requests out of 40,000 at 10-100 simultaneous learners, both modes; at 30 learners with no thinking time, 95% of requests under 0.45 s | Fixed "database is locked" when several workers start; loaded the Stage 1 model at startup (removed a 2 s delay); SQLite WAL mode |
 | Compatibility and device performance (`docs/testing/compatibility_results.md`) | 8/8 browser and device targets pass full sessions, including a low-end phone emulated with a 6× slower CPU; 60 frames per second everywhere; no JavaScript errors, no horizontal overflow | Raised learner buttons from 43 px to at least 48 px |
 | Field test (the pilot) | 31 learners in batches of about 12, on school Chromebooks, iPhones (Safari and Chrome), an Android phone, iPads, and Mac and Windows laptops | Device and browser are now recorded with each session |
 
